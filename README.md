@@ -1,1 +1,46 @@
-# Mi E-commerce
+# Sleep E-commerce
+
+## Requisitos
+
+- Node.js `>= 20.9.0`
+- Supabase configurado con el schema de `supabase/schema.sql`
+- Credenciales de Mercado Pago Checkout Pro
+
+## Variables de entorno
+
+Usá `.env.local.example` como base y completá:
+
+- `NEXT_PUBLIC_SITE_URL`
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `MERCADO_PAGO_ACCESS_TOKEN`
+- `MERCADO_PAGO_WEBHOOK_SECRET`
+
+## Desarrollo
+
+```bash
+npm install
+npm run dev
+```
+
+## Flujo de checkout implementado
+
+- `GET /checkout`: formulario de comprador + resumen del carrito
+- `POST` server action `createCheckoutPreferenceAction`: crea `orders`, `order_items`, `payments` y la preferencia de Mercado Pago
+- `POST /api/payments/mercadopago/webhook`: sincroniza pagos desde Mercado Pago y actualiza `orders/payments/carts`
+- `GET /checkout/success|pending|failure`: páginas de retorno para el usuario
+
+## Configuración de Mercado Pago
+
+- En Checkout Pro, configurá como `notification_url` pública:
+  `https://tu-dominio.com/api/payments/mercadopago/webhook`
+- Las `back_urls` ya las genera la app apuntando a `/checkout/success`, `/checkout/pending` y `/checkout/failure`.
+
+## Base de datos
+
+Aplicá el schema de Supabase antes de probar compras:
+
+```bash
+supabase db reset --file supabase/schema.sql
+```

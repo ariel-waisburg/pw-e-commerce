@@ -1,0 +1,141 @@
+.page {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(320px, 2fr);
+  gap: 32px;
+}
+
+.mediaGallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.mediaItem {
+  border-radius: var(--radius-md);
+  background: #f7f7f7;
+  padding-bottom: 100%;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.mediaItem img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mediaPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  color: #d0d0d0;
+  background: linear-gradient(135deg, #f8f8f8, #efefef);
+  width: 100%;
+  height: 100%;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.alert {
+  border-radius: 12px;
+  padding: 12px 16px;
+  background: #eef6ff;
+  color: #0b4ba2;
+  border: 1px solid #b8d6ff;
+  font-size: 14px;
+}
+
+.alert strong {
+  font-weight: 600;
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  line-height: 1.2;
+}
+
+.description {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.badgeRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  background: var(--color-surface-alt);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  padding: 6px 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: 1px solid var(--color-border);
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.featureCard {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  background: var(--color-surface);
+}
+
+.featureLabel {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.featureValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-top: 4px;
+}
+
+.longDescription {
+  border-top: 1px solid var(--color-border);
+  padding-top: 32px;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 1024px) {
+  .page {
+    grid-template-columns: 1fr;
+    padding: 48px 20px 96px;
+  }
+}

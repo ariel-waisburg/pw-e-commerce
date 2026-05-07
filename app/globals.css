@@ -1,0 +1,105 @@
+:root {
+  /* ── Brand Colors ──────────────────────────────── */
+  --color-primary: #1c2b3a;
+  --color-primary-light: #2d4156;
+  --color-accent: #00b4c5;
+  --color-accent-hover: #009aaa;
+  --color-accent-soft: rgba(0, 180, 197, 0.08);
+
+  /* ── Surfaces ─────────────────────────────────── */
+  --color-surface: #ffffff;
+  --color-surface-alt: #f4f7f6;
+  --color-surface-warm: #f8fafa;
+  --color-surface-teal: rgba(0, 180, 197, 0.06);
+
+  /* ── Text ─────────────────────────────────────── */
+  --color-text-primary: #1c2b3a;
+  --color-text-secondary: #5a6e7a;
+  --color-text-muted: #96a8b0;
+
+  /* ── Utility ──────────────────────────────────── */
+  --color-border: #e0eaec;
+  --color-border-light: #eef4f5;
+  --color-success: #22a06b;
+  --color-overlay: rgba(28, 43, 58, 0.55);
+  --background: var(--color-surface);
+  --foreground: var(--color-text-primary);
+
+  /* ── Radius ───────────────────────────────────── */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+
+  /* ── Spacing ──────────────────────────────────── */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
+  --space-3xl: 96px;
+
+  /* ── Container ────────────────────────────────── */
+  --container-max: 1280px;
+
+  /* ── Shadows ──────────────────────────────────── */
+  --shadow-sm: 0 1px 4px rgba(28, 43, 58, 0.06);
+  --shadow-md: 0 4px 16px rgba(28, 43, 58, 0.10);
+  --shadow-lg: 0 8px 32px rgba(28, 43, 58, 0.14);
+  --shadow-accent: 0 4px 20px rgba(0, 180, 197, 0.25);
+
+  /* ── Transitions ──────────────────────────────── */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s ease;
+  --transition-slow: 0.4s ease;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-inter), Inter, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+main {
+  width: 100%;
+}
+
+/* ── Utility: Serif headings ─────────────────────── */
+.serif {
+  font-family: var(--font-playfair), 'Playfair Display', Georgia, serif;
+}
