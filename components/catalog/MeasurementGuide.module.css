@@ -1,0 +1,141 @@
+.guide {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px;
+  border-radius: 24px;
+  border: 1px solid rgba(18, 58, 63, 0.08);
+  background: rgba(250, 247, 241, 0.85);
+}
+
+.guidePage {
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.title {
+  font-family: var(--font-playfair), "Playfair Display", Georgia, serif;
+  font-size: 1.3rem;
+  line-height: 1.1;
+  color: var(--color-primary);
+}
+
+.hint {
+  max-width: 320px;
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+.warning {
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid #efc66f;
+  background: rgba(255, 244, 217, 0.8);
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.65;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 320px;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid rgba(18, 58, 63, 0.08);
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.table th,
+.table td {
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.table th {
+  border-bottom: 1px solid rgba(18, 58, 63, 0.08);
+  background: rgba(84, 221, 202, 0.12);
+  color: var(--color-primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.table td {
+  color: var(--color-text-primary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.table tbody tr + tr td {
+  border-top: 1px solid rgba(18, 58, 63, 0.08);
+}
+
+.nameCell {
+  font-weight: 700;
+}
+
+.measureCell {
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.pageLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(18, 58, 63, 0.12);
+  background: #fff;
+  color: var(--color-text-secondary);
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.pageLink:hover {
+  border-color: var(--color-accent-strong);
+  color: var(--color-accent-strong);
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 560px) {
+  .guide {
+    padding: 18px;
+  }
+
+  .table th,
+  .table td {
+    padding: 12px 14px;
+  }
+
+  .pageLink {
+    width: 100%;
+  }
+}

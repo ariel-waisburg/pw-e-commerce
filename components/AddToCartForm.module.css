@@ -1,27 +1,45 @@
 .container {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 24px;
+  position: sticky;
+  top: 108px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  background: var(--color-surface);
+  gap: 18px;
+  padding: 24px;
+  border: 1px solid rgba(18, 58, 63, 0.08);
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(249, 246, 240, 0.96));
+  box-shadow: 0 14px 36px rgba(18, 58, 63, 0.08);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.freeShipping {
+  width: fit-content;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-success);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.headerCopy {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.55;
 }
 
 .priceBlock {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-}
-
-.freeShipping {
-  width: fit-content;
-  background: var(--color-success);
-  color: var(--color-surface);
-  border-radius: var(--radius-sm);
-  padding: 3px 8px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  gap: 6px;
 }
 
 .compareRow {
@@ -32,83 +50,135 @@
 }
 
 .discountBadge {
-  background: var(--color-accent);
-  color: var(--color-surface);
-  border-radius: var(--radius-sm);
-  padding: 3px 8px;
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.price {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(39, 194, 199, 0.14);
+  color: var(--color-accent-strong);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .compareAt {
   color: var(--color-text-muted);
   text-decoration: line-through;
-  font-size: 1rem;
+  font-size: 0.92rem;
+}
+
+.price {
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  font-weight: 800;
+  color: var(--color-text-primary);
 }
 
 .installments {
   color: var(--color-text-secondary);
-  font-size: 0.875rem;
+  font-size: 0.9rem;
+}
+
+.selectionSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
+  border-radius: 22px;
+  background: rgba(18, 58, 63, 0.04);
+  border: 1px solid rgba(18, 58, 63, 0.06);
+}
+
+.selectionLabel,
+.variantLabel {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.selectionValue {
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  font-weight: 700;
+}
+
+.variantHint {
+  color: var(--color-text-secondary);
+  font-size: 0.86rem;
+  line-height: 1.5;
 }
 
 .variantPicker {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-.variantLabel {
-  font-weight: 600;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
+  gap: 10px;
 }
 
 .variantGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 }
 
 .variantBtn {
-  border: 1px solid var(--color-border);
-  padding: 8px 16px;
-  border-radius: var(--radius-full);
-  font-size: 0.875rem;
-  background: var(--color-surface);
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(18, 58, 63, 0.12);
+  background: rgba(255, 255, 255, 0.8);
   color: var(--color-text-secondary);
-  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.variantBtn:hover,
+.variantBtn:focus-visible {
+  background: rgba(39, 194, 199, 0.08);
+  color: var(--color-accent-strong);
+  border-color: rgba(39, 194, 199, 0.35);
+  outline: none;
 }
 
 .variantSelected {
   background: var(--color-primary);
-  color: var(--color-surface);
+  color: #fff;
   border-color: var(--color-primary);
 }
 
-.cta {
-  background: var(--color-accent);
-  color: var(--color-surface);
-  border: none;
-  padding: 12px 24px;
-  border-radius: var(--radius-sm);
-  font-size: 0.9375rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
 }
 
-.cta:hover {
+.cta,
+.secondaryCta {
+  min-height: 50px;
+  border-radius: 16px;
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cta {
+  border: none;
+  background: var(--color-accent);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 12px 22px rgba(39, 194, 199, 0.18);
+}
+
+.cta:hover:not(:disabled),
+.cta:focus-visible:not(:disabled) {
   background: var(--color-accent-hover);
+  box-shadow: var(--shadow-accent);
+  outline: none;
 }
 
 .cta:disabled {
@@ -117,18 +187,39 @@
 }
 
 .secondaryCta {
-  border: 1px solid var(--color-primary);
-  border-radius: var(--radius-sm);
-  padding: 12px 18px;
+  border: 1px solid rgba(18, 58, 63, 0.12);
   background: transparent;
   color: var(--color-primary);
-  font-size: 0.9375rem;
-  font-weight: 600;
   cursor: pointer;
+}
+
+.secondaryCta:hover,
+.secondaryCta:focus-visible {
+  color: var(--color-accent-strong);
+  border-color: rgba(39, 194, 199, 0.35);
+  background: rgba(39, 194, 199, 0.08);
+  outline: none;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    position: static;
+  }
 }
 
 @media (max-width: 768px) {
   .container {
     padding: 20px;
+    border-radius: 24px;
+  }
+
+  .variantGrid {
+    gap: 8px;
+  }
+
+  .variantBtn {
+    min-height: 40px;
+    padding: 0 14px;
+    font-size: 0.84rem;
   }
 }

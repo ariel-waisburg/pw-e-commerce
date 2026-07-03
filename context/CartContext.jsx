@@ -86,7 +86,7 @@ export function CartProvider({ children }) {
       id: item.id,
       key: item.id,
       qty: item.quantity,
-      size: item.variant?.title ?? FALLBACK_SIZE,
+      size: item.variant?.label ?? item.variant?.title ?? FALLBACK_SIZE,
       unitPrice: item.unitPrice,
       product: {
         id: item.product?.id ?? item.variant?.id,

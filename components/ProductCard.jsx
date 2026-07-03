@@ -1,100 +1,279 @@
 'use client';
 
-import Link from 'next/link';
-import { useCart } from '@/context/CartContext';
-import { useMemo, useState } from 'react';
-import styles from './ProductCard.module.css';
-
-function formatPrice(p) {
-  return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(p);
-}
-
-const CATEGORY_EMOJI = {
-  colchones: '🛏',
-  conjuntos: '🏠',
-  almohadas: '😴',
-  divan: '🪑',
-  pillow: '☁️',
-  'super-combos': '⭐',
-};
+import Image from "next/image";
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import {
+  buildMattressCardModel,
+  formatPrice,
+} from "@/lib/products/product-card.mjs";
+import styles from "./ProductCard.module.css";
 
 const FALLBACK_VARIANT = (product) => ({
   id: `${product.id}-default`,
-  title: product.sizes?.[0] ?? 'Único',
+  title: product.sizes?.[0] ?? "Único",
+  label: product.sizes?.[0] ?? "Único",
   price: product.price,
   compareAtPrice: product.originalPrice,
+  stockStatus: "in_stock",
 });
 
-export default function ProductCard({ product }) {
-  const { addItem } = useCart();
+function buildImageCandidates(product = {}) {
+  const seenUrls = new Set();
+  const candidates = product.mediaCandidates?.length
+    ? product.mediaCandidates
+    : [...(product.media ?? []), ...(product.catalogMedia ?? [])];
+
+  return candidates.filter((asset) => {
+    if (!asset?.url || seenUrls.has(asset.url)) return false;
+    seenUrls.add(asset.url);
+    return true;
+  });
+}
+
+function ProductPlaceholder({ lineName, hasBadges = false }) {
+  return (
+    <div
+      className={`${styles.imagePlaceholder} ${hasBadges ? styles.imagePlaceholderWithBadges : ""}`}
+      aria-hidden="true"
+    >
+      <div className={styles.placeholderMark}>
+        <span className={styles.placeholderBrand}>Sleep</span>
+        <span className={styles.placeholderModel}>{lineName}</span>
+      </div>
+      <div className={styles.placeholderBase} />
+      <div className={styles.placeholderMattress} />
+    </div>
+  );
+}
+
+function ProductMedia({
+  productKey,
+  productHref,
+  imageCandidates,
+  imageAlt,
+  lineName,
+  hasBadges = false,
+  badges = null,
+}) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const activeImage = imageCandidates[activeImageIndex] ?? null;
+
+  return (
+    <Link key={productKey} href={productHref} className={styles.mediaLink}>
+      <div className={styles.imageWrap}>
+        {activeImage?.url && !imageFailed ? (
+          <Image
+            key={activeImage.url}
+            src={activeImage.url}
+            alt={imageAlt}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className={styles.productImage}
+            unoptimized
+            onError={() => {
+              if (activeImageIndex < imageCandidates.length - 1) {
+                setActiveImageIndex((current) => current + 1);
+                return;
+              }
+
+              setImageFailed(true);
+            }}
+          />
+        ) : (
+          <ProductPlaceholder lineName={lineName} hasBadges={hasBadges} />
+        )}
+
+        {badges}
+      </div>
+    </Link>
+  );
+}
+
+function MattressProductCard({
+  product,
+  href,
+  layout = "grid",
+  featured = undefined,
+  forceOutOfStock = false,
+}) {
   const variantOptions = useMemo(() => {
     if (product.variants?.length) return product.variants;
     return [FALLBACK_VARIANT(product)];
   }, [product]);
 
-  const [selectedVariantId, setSelectedVariantId] = useState(product.defaultVariantId ?? variantOptions[0]?.id);
-  const [added, setAdded] = useState(false);
-  const selectedVariant = useMemo(() => {
-    return variantOptions.find((variant) => variant.id === selectedVariantId) ?? variantOptions[0];
-  }, [variantOptions, selectedVariantId]);
+  const [selectedVariantId, setSelectedVariantId] = useState(
+    product.defaultVariantId ?? variantOptions[0]?.id
+  );
+  const imageCandidates = useMemo(() => buildImageCandidates(product), [product]);
 
-  const discount = selectedVariant?.compareAtPrice
-    ? Math.round((1 - selectedVariant.price / selectedVariant.compareAtPrice) * 100)
-    : null;
+  const selectedVariant = useMemo(
+    () => variantOptions.find((variant) => variant.id === selectedVariantId) ?? variantOptions[0],
+    [selectedVariantId, variantOptions]
+  );
 
-  const handleAdd = (e) => {
-    e.preventDefault();
-    if (!selectedVariant) return;
-    addItem({ variantId: selectedVariant.id, quantity: 1 });
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
-  };
+  const card = useMemo(
+    () => buildMattressCardModel(product, selectedVariant, { featured, forceOutOfStock }),
+    [featured, forceOutOfStock, product, selectedVariant]
+  );
+
+  const productHref = href ?? `/catalog/${product.slug}`;
+  const imageAlt = `${card.lineName} ${card.commercialName}`;
+  const mediaKey = `${product.id}:${imageCandidates.length}:${productHref}`;
 
   return (
-    <Link href={`/catalog/${product.slug}`} className={styles.card}>
-      <div className={styles.imageWrap}>
-        <div className={styles.imagePlaceholder}>
-          <span className={styles.emoji}>{CATEGORY_EMOJI[product.category] || '🛒'}</span>
-        </div>
-        <div className={styles.badges}>
-          <span className={`${styles.badge} ${styles.shippingBadge}`}>Envio gratis</span>
-          {discount ? <span className={`${styles.badge} ${styles.discountBadge}`}>-{discount}% OFF</span> : null}
-        </div>
-      </div>
-
-      <div className={styles.body}>
-        <p className={styles.brand}>{product.line || product.brand || product.category}</p>
-        <h3 className={styles.name}>{product.name}</h3>
-
-        {variantOptions.length > 1 && (
-          <div className={styles.sizes}>
-            {variantOptions.map((variant) => (
-              <button
-                key={variant.id}
-                className={`${styles.sizeBtn} ${selectedVariant?.id === variant.id ? styles.sizeSelected : ''}`}
-                onClick={e => { e.preventDefault(); setSelectedVariantId(variant.id); }}
-              >
-                {variant.title}
-              </button>
-            ))}
-          </div>
-        )}
-
-        <div className={styles.pricing}>
-          <span className={styles.price}>{formatPrice(selectedVariant?.price ?? product.price)}</span>
-          {selectedVariant?.compareAtPrice ? (
-            <div className={styles.promoLine}>
-              <span className={styles.discountText}>-{discount}% OFF</span>
-              <span className={styles.originalPrice}>{formatPrice(selectedVariant.compareAtPrice)}</span>
+    <article
+      className={[
+        styles.card,
+        styles.cardMattress,
+        layout === "carousel" ? styles.cardCarousel : "",
+        layout === "list" ? styles.cardList : "",
+        card.isFeatured ? styles.cardFeatured : "",
+        card.stockState === "out_of_stock" ? styles.cardOutOfStock : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <div className={styles.mediaColumn}>
+        <ProductMedia
+          productKey={mediaKey}
+          productHref={productHref}
+          imageCandidates={imageCandidates}
+          imageAlt={imageAlt}
+          lineName={card.lineName}
+          hasBadges={card.isFeatured || card.stockState === "out_of_stock"}
+          badges={
+            <div className={styles.badges}>
+              {card.isFeatured ? <span className={styles.featuredBadge}>Destacado</span> : null}
+              {card.stockState === "out_of_stock" ? (
+                <span className={styles.stockBadge}>Sin stock</span>
+              ) : null}
             </div>
-          ) : null}
-        </div>
-        <p className={styles.installments}>12 x {formatPrice((selectedVariant?.price ?? product.price) / 12)} sin interés</p>
+          }
+        />
 
-        <button className={`${styles.addBtn} ${added ? styles.added : ''}`} onClick={handleAdd}>
-          {added ? '✓ Agregado' : 'Agregar al carrito'}
-        </button>
+        {variantOptions.length > 1 ? (
+          <div className={styles.measureStrip}>
+            <p className={styles.measureStripLabel}>Medida</p>
+            <div className={styles.sizes} aria-label="Medidas disponibles">
+              {variantOptions.slice(0, 4).map((variant) => (
+                <button
+                  key={variant.id}
+                  type="button"
+                  className={`${styles.sizeBtn} ${
+                    selectedVariant?.id === variant.id ? styles.sizeSelected : ""
+                  }`}
+                  aria-pressed={selectedVariant?.id === variant.id}
+                  onClick={() => setSelectedVariantId(variant.id)}
+                >
+                  {variant.label ?? variant.title}
+                </button>
+              ))}
+              {variantOptions.length > 4 ? (
+                <Link href={productHref} className={styles.moreSizes}>
+                  Ver más
+                </Link>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
       </div>
-    </Link>
+
+      <div className={styles.contentColumn}>
+        <div className={styles.contentMain}>
+          <div className={styles.header}>
+            <p className={styles.lineEyebrow}>{card.lineName}</p>
+            {card.saleTypeLabel ? <span className={styles.saleTypePill}>{card.saleTypeLabel}</span> : null}
+          </div>
+
+          <div className={styles.nameBlock}>
+            <h3 className={styles.name} title={card.commercialName}>
+              {card.commercialName}
+            </h3>
+            <p className={styles.technologyLabel}>{card.technologyLabel}</p>
+          </div>
+
+          <p className={styles.specSummary}>
+            {card.heightLabel} · {card.pillowLabel}
+          </p>
+        </div>
+
+        <div className={styles.contentFooter}>
+          <div className={styles.priceBlock}>
+            <div className={styles.priceHeader}>
+              <div>
+                <p className={styles.price}>{formatPrice(card.currentPrice)}</p>
+              </div>
+              {card.promotionLabel ? <span className={styles.promoBadge}>{card.promotionLabel}</span> : null}
+            </div>
+
+            <div className={styles.financeBlock}>
+              {card.compareAtPrice ? (
+                <p className={styles.originalPrice}>Antes {formatPrice(card.compareAtPrice)}</p>
+              ) : (
+                <p className={styles.regularPrice}>Precio vigente</p>
+              )}
+              {card.installmentsLabel ? <p className={styles.installments}>{card.installmentsLabel}</p> : null}
+            </div>
+          </div>
+
+          <div className={styles.supportRow}>
+            {card.measureSummary ? <p className={styles.supportMeta}>{card.measureSummary} disponibles</p> : null}
+            {card.setSplitLabel ? <p className={styles.supportMeta}>Sommier: {card.setSplitLabel}</p> : null}
+          </div>
+
+          <div className={styles.actions}>
+            <Link
+              href={productHref}
+              className={`${styles.primaryAction} ${
+                card.stockState === "out_of_stock" ? styles.primaryActionMuted : ""
+              }`}
+            >
+              {card.stockState === "out_of_stock" ? "Ver producto" : "Elegir medida"}
+            </Link>
+          </div>
+        </div>
+      </div>
+    </article>
   );
+}
+
+function AccessoryProductCard({ product, href }) {
+  const productHref = href ?? `/catalog/${product.slug}`;
+  const price = product.price ?? product.variants?.[0]?.price ?? 0;
+  const imageCandidates = useMemo(() => buildImageCandidates(product), [product]);
+  const mediaKey = `${product.id}:${imageCandidates.length}:${productHref}`;
+
+  return (
+    <article className={`${styles.card} ${styles.cardAccessory}`}>
+      <ProductMedia
+        productKey={mediaKey}
+        productHref={productHref}
+        imageCandidates={imageCandidates}
+        imageAlt={product.name}
+        lineName="Sleep"
+      />
+      <div className={styles.contentColumn}>
+        <h3 className={styles.name}>{product.name}</h3>
+        {product.description ? <p className={styles.accessoryDescription}>{product.description}</p> : null}
+        <p className={styles.price}>{formatPrice(price)}</p>
+        <div className={styles.actions}>
+          <Link href={productHref} className={styles.primaryAction}>
+            Ver detalle
+          </Link>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+export default function ProductCard(props) {
+  const { product } = props;
+
+  if (product?.saleType === "mattress" || product?.saleType === "set") {
+    return <MattressProductCard {...props} />;
+  }
+
+  return <AccessoryProductCard {...props} />;
 }

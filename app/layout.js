@@ -22,7 +22,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className={`${inter.variable} ${playfair.variable}`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${playfair.variable}`}>
         <CartProvider>
           <Navbar />
           {children}

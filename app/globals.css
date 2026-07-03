@@ -1,27 +1,30 @@
 :root {
   /* ── Brand Colors ──────────────────────────────── */
-  --color-primary: #1c2b3a;
-  --color-primary-light: #2d4156;
-  --color-accent: #00b4c5;
-  --color-accent-hover: #009aaa;
-  --color-accent-soft: rgba(0, 180, 197, 0.08);
+  --color-primary: #163c42;
+  --color-primary-light: #255c63;
+  --color-accent: #54ddca;
+  --color-accent-hover: #3fceb9;
+  --color-accent-soft: rgba(84, 221, 202, 0.16);
+  --color-accent-strong: #16897c;
 
   /* ── Surfaces ─────────────────────────────────── */
-  --color-surface: #ffffff;
-  --color-surface-alt: #f4f7f6;
-  --color-surface-warm: #f8fafa;
-  --color-surface-teal: rgba(0, 180, 197, 0.06);
+  --color-surface: #fffdf8;
+  --color-surface-alt: #f5f8f6;
+  --color-surface-warm: #f8f5ef;
+  --color-surface-teal: rgba(84, 221, 202, 0.12);
+  --color-surface-cream: #f2ece2;
 
   /* ── Text ─────────────────────────────────────── */
-  --color-text-primary: #1c2b3a;
-  --color-text-secondary: #5a6e7a;
-  --color-text-muted: #96a8b0;
+  --color-text-primary: #163238;
+  --color-text-secondary: #5d7273;
+  --color-text-muted: #8fa2a3;
+  --color-text-dark: #101516;
 
   /* ── Utility ──────────────────────────────────── */
-  --color-border: #e0eaec;
-  --color-border-light: #eef4f5;
+  --color-border: #d7e6e3;
+  --color-border-light: #e8f1ef;
   --color-success: #22a06b;
-  --color-overlay: rgba(28, 43, 58, 0.55);
+  --color-overlay: rgba(18, 58, 63, 0.5);
   --background: var(--color-surface);
   --foreground: var(--color-text-primary);
 
@@ -46,10 +49,10 @@
   --container-max: 1280px;
 
   /* ── Shadows ──────────────────────────────────── */
-  --shadow-sm: 0 1px 4px rgba(28, 43, 58, 0.06);
-  --shadow-md: 0 4px 16px rgba(28, 43, 58, 0.10);
-  --shadow-lg: 0 8px 32px rgba(28, 43, 58, 0.14);
-  --shadow-accent: 0 4px 20px rgba(0, 180, 197, 0.25);
+  --shadow-sm: 0 1px 4px rgba(22, 50, 56, 0.06);
+  --shadow-md: 0 6px 18px rgba(22, 50, 56, 0.10);
+  --shadow-lg: 0 14px 42px rgba(22, 50, 56, 0.14);
+  --shadow-accent: 0 10px 28px rgba(84, 221, 202, 0.24);
 
   /* ── Transitions ──────────────────────────────── */
   --transition-fast: 0.15s ease;
@@ -65,7 +68,9 @@ body {
 
 body {
   color: var(--foreground);
-  background: var(--background);
+  background:
+    radial-gradient(circle at top left, rgba(84, 221, 202, 0.12), transparent 28%),
+    linear-gradient(180deg, #fffdf8 0%, #fbf8f2 100%);
   font-family: var(--font-inter), Inter, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
