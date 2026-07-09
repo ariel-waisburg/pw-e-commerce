@@ -64,9 +64,9 @@ function buildPayload(formState) {
       ...(variant.id ? { id: variant.id } : {}),
       sku: variant.sku,
       title: variant.title,
-      priceCents: variant.priceCents,
+      ...(variant.priceCents ? { priceCents: variant.priceCents } : {}),
       ...(variant.compareAtPriceCents ? { compareAtPriceCents: variant.compareAtPriceCents } : {}),
-      stockQuantity: variant.stockQuantity,
+      ...(variant.stockQuantity ? { stockQuantity: variant.stockQuantity } : {}),
     })),
   };
 }
