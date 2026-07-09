@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getAdminSession } from "@/lib/supabase/admin-auth";
 import styles from "./admin.module.css";
@@ -14,7 +15,7 @@ export default async function AdminDashboardLayout({ children }) {
       <header className={styles.header}>
         <span className={styles.brand}>Sleep Admin</span>
         <nav className={styles.nav}>
-          <a href="/admin/productos">Productos</a>
+          <Link href="/admin/productos">Productos</Link>
         </nav>
         <span className={styles.userEmail}>{session.user.email}</span>
       </header>
