@@ -25,7 +25,17 @@ const LINE_MEASURE_CODES = {
   "Classic Special": CANONICAL_MEASURE_CODES,
   "High Rest": CANONICAL_MEASURE_CODES,
   "Superior Rest": CANONICAL_MEASURE_CODES,
-  "Top Hotel Rest": ["140x190", "150x190", "160x200", "180x200", "200x200"],
+  "Top Hotel Rest": [
+    "130x190",
+    "140x190",
+    "140x200",
+    "150x190",
+    "150x200",
+    "160x190",
+    "160x200",
+    "180x200",
+    "200x200",
+  ],
 };
 
 const LINE_PRICE_BASE = {
@@ -66,7 +76,7 @@ const TECHNOLOGY_PRICE_OFFSET = {
 };
 
 const FEATURED_PRODUCT_KEYS = new Set([
-  "mattress:Classic Rest:pocket",
+  "mattress:Classic Rest:bonell",
   "mattress:High Rest:pocket",
   "mattress:Superior Rest:bonell",
   "mattress:Top Hotel Rest:pocket",
