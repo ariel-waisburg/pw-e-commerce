@@ -371,13 +371,21 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
     return queryString ? `${base}?${queryString}` : base;
   };
 
-  const handleSearchSubmit = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+  const submitSearch = (formElement) => {
+    const formData = new FormData(formElement);
     replaceState({
       ...model.state,
       q: String(formData.get("q") ?? "").trim(),
     });
+  };
+
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+    submitSearch(event.currentTarget);
+  };
+
+  const handleSearchButtonClick = (event) => {
+    submitSearch(event.currentTarget.closest("form"));
   };
 
   const handleFieldChange = (key, value) => {
@@ -413,6 +421,192 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
     });
   };
 
+  const hasActiveSearch = Boolean(model.state.q);
+
+  const resultsSection = (
+    <section className={styles.resultsSection} aria-busy={isPending}>
+      <div className={styles.resultsHeader}>
+        <div>
+          <p className={styles.resultsCount}>
+            {model.resultCount} producto{model.resultCount === 1 ? "" : "s"}
+            {model.state.q ? ` para “${model.state.q}”` : ""}
+          </p>
+        </div>
+        {isPending ? <p className={styles.resultsHint}>Actualizando resultados...</p> : null}
+      </div>
+
+      {model.visibleProducts.length ? (
+        <div className={styles.grid}>
+          {model.visibleProducts.map((product) => (
+            <ProductCard key={product.id} product={product} href={hrefBuilder(product.slug)} />
+          ))}
+        </div>
+      ) : (
+        <div className={styles.emptyState}>
+          <span className={styles.emptyIcon}>🛏️</span>
+          <h3>No encontramos productos para esta combinación</h3>
+          <p>
+            Ajustá una respuesta o remové un filtro. El estado actual sigue guardado en la URL para
+            que no pierdas el contexto.
+          </p>
+
+          {model.zeroResultsGuidance ? (
+            <Link
+              href={getZeroResultsHref(model.state, model.zeroResultsGuidance)}
+              className={styles.emptyAction}
+            >
+              {model.zeroResultsGuidance.kind === "remove_filter"
+                ? `Probar sin ${model.zeroResultsGuidance.filterKey}`
+                : `Probar con ${model.zeroResultsGuidance.suggestedMeasureCode.replace("x", " x ")} cm`}
+            </Link>
+          ) : null}
+
+          {model.relatedCategories.length ? (
+            <div className={styles.relatedCategories}>
+              <p className={styles.relatedLabel}>Categorías relacionadas</p>
+              <div className={styles.choiceGrid}>
+                {model.relatedCategories.map((category) => (
+                  <Link
+                    key={category.slug}
+                    href={buildCatalogStateHref({
+                      ...model.state,
+                      category: category.slug,
+                      saleType: null,
+                    })}
+                    className={styles.choiceBtn}
+                  >
+                    {category.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ) : null}
+        </div>
+      )}
+    </section>
+  );
+
+  const filtersSection = (
+    <section className={styles.filtersSection}>
+      <div className={styles.filtersHeader}>
+        <div>
+          <h2 className={styles.sectionTitle}>Compará por decisiones reales de compra</h2>
+        </div>
+        <button
+          type="button"
+          className={styles.clearBtn}
+          onClick={() => replaceState(clearCatalogState(model.state))}
+        >
+          Limpiar todo
+        </button>
+      </div>
+
+      <div className={styles.activeChipsWrap}>
+        {model.activeSelectorChips.length ? (
+          <div className={styles.activeChipRow}>
+            <span className={styles.activeChipLabel}>Tus respuestas</span>
+            {model.activeSelectorChips.map((chip) => (
+              <button
+                key={`${chip.kind}-${chip.key}`}
+                type="button"
+                className={styles.activeChip}
+                onClick={() => replaceState(removeCatalogStateKey(model.state, chip.key))}
+              >
+                {chip.label} <span aria-hidden="true">×</span>
+              </button>
+            ))}
+          </div>
+        ) : null}
+
+        {model.activeFilterChips.length ? (
+          <div className={styles.activeChipRow}>
+            <span className={styles.activeChipLabel}>Filtros activos</span>
+            {model.activeFilterChips.map((chip) => (
+              <button
+                key={`${chip.kind}-${chip.key}`}
+                type="button"
+                className={styles.activeChip}
+                onClick={() => replaceState(removeCatalogStateKey(model.state, chip.key))}
+              >
+                {chip.label} <span aria-hidden="true">×</span>
+              </button>
+            ))}
+          </div>
+        ) : null}
+      </div>
+
+      {!model.isAccessoryMode ? (
+        <div className={styles.filterGrid}>
+          <ChoiceGroup
+            title="Medida"
+            options={model.filterOptions.measures}
+            value={model.state.measure}
+            onChange={(value) => handleFieldChange("measure", value)}
+            className={styles.filterCard}
+          />
+
+          <ChoiceGroup
+            title="Tipo"
+            options={model.filterOptions.saleTypes.map((option) => ({
+              value: option.value,
+              label: option.value === "mattress" ? "Solo colchón" : "Colchón + base",
+            }))}
+            value={model.state.saleType}
+            onChange={(value) => handleFieldChange("saleType", value)}
+            className={styles.filterCard}
+          />
+
+          <ChoiceGroup
+            title="Tecnología"
+            options={model.filterOptions.technologies.map((option) => ({
+              value: option.value,
+              label:
+                option.value === "bonell"
+                  ? "Resortes tradicionales"
+                  : option.value === "pocket"
+                    ? "Resortes pocket"
+                    : option.label,
+            }))}
+            value={model.state.technology}
+            onChange={(value) => handleFieldChange("technology", value)}
+            className={styles.filterCard}
+          />
+
+          <ChoiceGroup
+            title="Aislación de movimiento"
+            options={model.filterOptions.motionIsolationLevels}
+            value={model.state.motionIsolation}
+            onChange={(value) => handleFieldChange("motionIsolation", value)}
+            className={styles.filterCard}
+          />
+
+          <ChoiceGroup
+            title="Altura"
+            options={model.filterOptions.heightProfiles}
+            value={model.state.heightProfile}
+            onChange={(value) => handleFieldChange("heightProfile", value)}
+            className={styles.filterCard}
+          />
+
+          <ChoiceGroup
+            title="Disponibilidad"
+            options={model.filterOptions.availability}
+            value={model.state.availability}
+            onChange={(value) => handleFieldChange("availability", value)}
+            className={styles.filterCard}
+          />
+        </div>
+      ) : null}
+    </section>
+  );
+
+  const catalogLayout = (
+    <div className={styles.catalogLayout}>
+      <aside className={styles.filtersSidebar}>{filtersSection}</aside>
+      {resultsSection}
+    </div>
+  );
+
   return (
     <main className={styles.page}>
       <MeasurementGuideModal
@@ -437,7 +631,9 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
             placeholder="Ej.: Colchón firme 2 plazas, Queen con resortes, Almohada memory foam"
             aria-label="Buscar en lenguaje natural"
           />
-          <button type="submit">Buscar</button>
+          <button type="button" onClick={handleSearchButtonClick}>
+            Buscar
+          </button>
         </form>
         <p className={styles.searchHint}>
           Entiende medidas, nombres comunes, tecnologías y términos como “hotelero” o “para pareja”.
@@ -477,6 +673,8 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
           mantiene selector, filtros y lógica de recomendación.
         </div>
       ) : null}
+
+      {hasActiveSearch ? catalogLayout : null}
 
       {!model.isAccessoryMode ? (
         <section className={styles.selectorSection}>
@@ -564,178 +762,7 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
         </div>
       )}
 
-      <section className={styles.filtersSection}>
-        <div className={styles.filtersHeader}>
-          <div>
-            <h2 className={styles.sectionTitle}>Compará por decisiones reales de compra</h2>
-          </div>
-          <button
-            type="button"
-            className={styles.clearBtn}
-            onClick={() => replaceState(clearCatalogState(model.state))}
-          >
-            Limpiar todo
-          </button>
-        </div>
-
-        <div className={styles.activeChipsWrap}>
-          {model.activeSelectorChips.length ? (
-            <div className={styles.activeChipRow}>
-              <span className={styles.activeChipLabel}>Tus respuestas</span>
-              {model.activeSelectorChips.map((chip) => (
-                <button
-                  key={`${chip.kind}-${chip.key}`}
-                  type="button"
-                  className={styles.activeChip}
-                  onClick={() => replaceState(removeCatalogStateKey(model.state, chip.key))}
-                >
-                  {chip.label} <span aria-hidden="true">×</span>
-                </button>
-              ))}
-            </div>
-          ) : null}
-
-          {model.activeFilterChips.length ? (
-            <div className={styles.activeChipRow}>
-              <span className={styles.activeChipLabel}>Filtros activos</span>
-              {model.activeFilterChips.map((chip) => (
-                <button
-                  key={`${chip.kind}-${chip.key}`}
-                  type="button"
-                  className={styles.activeChip}
-                  onClick={() => replaceState(removeCatalogStateKey(model.state, chip.key))}
-                >
-                  {chip.label} <span aria-hidden="true">×</span>
-                </button>
-              ))}
-            </div>
-          ) : null}
-        </div>
-
-        {!model.isAccessoryMode ? (
-          <div className={styles.filterGrid}>
-            <ChoiceGroup
-              title="Medida"
-              options={model.filterOptions.measures}
-              value={model.state.measure}
-              onChange={(value) => handleFieldChange("measure", value)}
-              className={styles.filterCard}
-            />
-
-            <ChoiceGroup
-              title="Tipo"
-              options={model.filterOptions.saleTypes.map((option) => ({
-                value: option.value,
-                label: option.value === "mattress" ? "Solo colchón" : "Colchón + base",
-              }))}
-              value={model.state.saleType}
-              onChange={(value) => handleFieldChange("saleType", value)}
-              className={styles.filterCard}
-            />
-
-            <ChoiceGroup
-              title="Tecnología"
-              options={model.filterOptions.technologies.map((option) => ({
-                value: option.value,
-                label:
-                  option.value === "bonell"
-                    ? "Resortes tradicionales"
-                    : option.value === "pocket"
-                      ? "Resortes pocket"
-                      : option.label,
-              }))}
-              value={model.state.technology}
-              onChange={(value) => handleFieldChange("technology", value)}
-              className={styles.filterCard}
-            />
-
-            <ChoiceGroup
-              title="Aislación de movimiento"
-              options={model.filterOptions.motionIsolationLevels}
-              value={model.state.motionIsolation}
-              onChange={(value) => handleFieldChange("motionIsolation", value)}
-              className={styles.filterCard}
-            />
-
-            <ChoiceGroup
-              title="Altura"
-              options={model.filterOptions.heightProfiles}
-              value={model.state.heightProfile}
-              onChange={(value) => handleFieldChange("heightProfile", value)}
-              className={styles.filterCard}
-            />
-
-            <ChoiceGroup
-              title="Disponibilidad"
-              options={model.filterOptions.availability}
-              value={model.state.availability}
-              onChange={(value) => handleFieldChange("availability", value)}
-              className={styles.filterCard}
-            />
-          </div>
-        ) : null}
-      </section>
-
-      <section className={styles.resultsSection} aria-busy={isPending}>
-        <div className={styles.resultsHeader}>
-          <div>
-            <p className={styles.resultsCount}>
-              {model.resultCount} producto{model.resultCount === 1 ? "" : "s"}
-              {model.state.q ? ` para “${model.state.q}”` : ""}
-            </p>
-          </div>
-          {isPending ? <p className={styles.resultsHint}>Actualizando resultados...</p> : null}
-        </div>
-
-        {model.visibleProducts.length ? (
-          <div className={styles.grid}>
-            {model.visibleProducts.map((product) => (
-              <ProductCard key={product.id} product={product} href={hrefBuilder(product.slug)} />
-            ))}
-          </div>
-        ) : (
-          <div className={styles.emptyState}>
-            <span className={styles.emptyIcon}>🛏️</span>
-            <h3>No encontramos productos para esta combinación</h3>
-            <p>
-              Ajustá una respuesta o remové un filtro. El estado actual sigue guardado en la URL para
-              que no pierdas el contexto.
-            </p>
-
-            {model.zeroResultsGuidance ? (
-              <Link
-                href={getZeroResultsHref(model.state, model.zeroResultsGuidance)}
-                className={styles.emptyAction}
-              >
-                {model.zeroResultsGuidance.kind === "remove_filter"
-                  ? `Probar sin ${model.zeroResultsGuidance.filterKey}`
-                  : `Probar con ${model.zeroResultsGuidance.suggestedMeasureCode.replace("x", " x ")} cm`}
-              </Link>
-            ) : null}
-
-            {model.relatedCategories.length ? (
-              <div className={styles.relatedCategories}>
-                <p className={styles.relatedLabel}>Categorías relacionadas</p>
-                <div className={styles.choiceGrid}>
-                  {model.relatedCategories.map((category) => (
-                    <Link
-                      key={category.slug}
-                      href={buildCatalogStateHref({
-                        ...model.state,
-                        category: category.slug,
-                        saleType: null,
-                      })}
-                      className={styles.choiceBtn}
-                    >
-                      {category.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-          </div>
-        )}
-      </section>
+      {!hasActiveSearch ? catalogLayout : null}
     </main>
   );
 }
