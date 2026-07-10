@@ -130,7 +130,7 @@ function MattressProductCard({
         layout === "carousel" ? styles.cardCarousel : "",
         layout === "list" ? styles.cardList : "",
         card.isFeatured ? styles.cardFeatured : "",
-        card.stockState === "out_of_stock" ? styles.cardOutOfStock : "",
+        card.stockState === "out_of_stock" || card.stockState === "unconfigured" ? styles.cardOutOfStock : "",
       ]
         .filter(Boolean)
         .join(" ")}
@@ -142,12 +142,15 @@ function MattressProductCard({
           imageCandidates={imageCandidates}
           imageAlt={imageAlt}
           lineName={card.lineName}
-          hasBadges={card.isFeatured || card.stockState === "out_of_stock"}
+          hasBadges={card.isFeatured || card.stockState === "out_of_stock" || card.stockState === "unconfigured"}
           badges={
             <div className={styles.badges}>
               {card.isFeatured ? <span className={styles.featuredBadge}>Destacado</span> : null}
               {card.stockState === "out_of_stock" ? (
                 <span className={styles.stockBadge}>Sin stock</span>
+              ) : null}
+              {card.stockState === "unconfigured" ? (
+                <span className={styles.stockBadge}>Sin stock configurado</span>
               ) : null}
             </div>
           }
@@ -203,7 +206,9 @@ function MattressProductCard({
           <div className={styles.priceBlock}>
             <div className={styles.priceHeader}>
               <div>
-                <p className={styles.price}>{formatPrice(card.currentPrice)}</p>
+                <p className={styles.price}>
+                  {card.currentPrice != null ? formatPrice(card.currentPrice) : "Precio a confirmar"}
+                </p>
               </div>
               {card.promotionLabel ? <span className={styles.promoBadge}>{card.promotionLabel}</span> : null}
             </div>
@@ -227,10 +232,14 @@ function MattressProductCard({
             <Link
               href={productHref}
               className={`${styles.primaryAction} ${
-                card.stockState === "out_of_stock" ? styles.primaryActionMuted : ""
+                card.stockState === "out_of_stock" || card.stockState === "unconfigured"
+                  ? styles.primaryActionMuted
+                  : ""
               }`}
             >
-              {card.stockState === "out_of_stock" ? "Ver producto" : "Elegir medida"}
+              {card.stockState === "out_of_stock" || card.stockState === "unconfigured"
+                ? "Ver producto"
+                : "Elegir medida"}
             </Link>
           </div>
         </div>
