@@ -594,7 +594,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 24px;
 }
 
@@ -712,12 +712,6 @@
   }
 }
 
-@media (max-width: 1100px) {
-  .grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
 @media (max-width: 900px) {
   .catalogLayout {
     grid-template-columns: 1fr;
@@ -755,10 +749,6 @@
     flex-direction: column;
   }
 
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .questionHelpContent {
     right: auto;
     left: 0;
@@ -774,8 +764,7 @@
 
   .searchBar,
   .budgetInputGrid,
-  .filterGrid,
-  .grid {
+  .filterGrid {
     grid-template-columns: 1fr;
   }
 
