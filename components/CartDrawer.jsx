@@ -69,7 +69,7 @@ export default function CartDrawer() {
               <div className={styles.installments}>
                 <span>en 12 cuotas sin interés de {formatPrice(total / 12)}</span>
               </div>
-              <Link href="/checkout" className={styles.checkout} onClick={() => setIsOpen(false)}>
+              <Link href="/checkout" className={styles.checkout} onClick={() => setIsOpen(false)} prefetch={false}>
                 Ir al checkout
               </Link>
               <button className={styles.clearBtn} onClick={clearCart}>Vaciar carrito</button>
