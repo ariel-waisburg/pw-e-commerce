@@ -62,7 +62,7 @@ const LINE_PRICE_BASE = {
 };
 
 const LINE_PRICE_STEP = {
-  "Classic Rest": 22000,
+  "Classic Rest": 7000,
   "Classic Special": 24000,
   "High Rest": 32000,
   "Superior Rest": 38000,
