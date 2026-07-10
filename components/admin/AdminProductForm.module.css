@@ -1,0 +1,113 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: 640px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.field input,
+.field textarea,
+.field select {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font: inherit;
+  resize: vertical;
+}
+
+.checkboxField {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.fieldError,
+.formError {
+  color: #b3261e;
+  font-size: 0.85rem;
+  font-style: normal;
+}
+
+.variants {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.variants legend {
+  padding: 0 var(--space-xs);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.variantRow {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr 1fr 1fr auto;
+  gap: var(--space-sm);
+}
+
+.variantRow input {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  font: inherit;
+}
+
+.addVariant {
+  align-self: flex-start;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-sm);
+}
+
+.submit {
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-surface);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.delete {
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  border: 1px solid #b3261e;
+  background: transparent;
+  color: #b3261e;
+  font-weight: 600;
+  cursor: pointer;
+}

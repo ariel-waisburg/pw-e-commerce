@@ -31,6 +31,35 @@ npm run dev
 - `POST /api/payments/mercadopago/webhook`: sincroniza pagos desde Mercado Pago y actualiza `orders/payments/carts`
 - `GET /checkout/success|pending|failure`: páginas de retorno para el usuario
 
+## Panel de admin
+
+- `GET /admin/login`: login con email/password (Supabase Auth)
+- `GET /admin/productos`: listado de productos (requiere sesión de admin)
+- `GET /admin/productos/nuevo` y `GET /admin/productos/:id`: alta y edición de
+  productos + variantes
+
+### Crear el primer usuario admin
+
+1. En Supabase Studio → Authentication → Users → Add user, creá un usuario
+   con el email y contraseña que vas a usar para entrar al panel.
+2. Copiá el UUID de ese usuario.
+3. En SQL Editor, ejecutá (reemplazando el UUID):
+
+   ```sql
+   insert into public.admin_users (user_id, role)
+   values ('<uuid-del-usuario>', 'admin');
+   ```
+
+Una vez hecho esto, ese usuario puede entrar en `/admin/login` con su email y
+contraseña.
+
+## API interna
+
+- `GET /api/products`: catálogo público activo (usado por home y `/catalog`
+  a través de la misma función de servicio, sin round-trip HTTP interno).
+- `GET/POST /api/admin/products` y `GET/PATCH/DELETE /api/admin/products/:id`:
+  CRUD de productos, requiere sesión de admin (`401` sin ella).
+
 ## Configuración de Mercado Pago
 
 - En Checkout Pro, configurá como `notification_url` pública:

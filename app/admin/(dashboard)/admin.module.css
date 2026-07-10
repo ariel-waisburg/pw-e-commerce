@@ -1,0 +1,44 @@
+.shell {
+  min-height: 100vh;
+  background: var(--color-surface-alt);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.brand {
+  font-weight: 700;
+}
+
+.nav {
+  display: flex;
+  gap: var(--space-md);
+  flex: 1;
+}
+
+.nav a {
+  color: var(--color-surface);
+  text-decoration: none;
+  opacity: 0.85;
+}
+
+.nav a:hover {
+  opacity: 1;
+}
+
+.userEmail {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.content {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: var(--space-lg);
+}
