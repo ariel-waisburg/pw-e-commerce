@@ -202,28 +202,30 @@ export default function AdminProductForm({ product = null, productId = null }) {
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
-      <label className={styles.field}>
-        <span>Nombre</span>
-        <input value={formState.name} onChange={(event) => updateField("name", event.target.value)} required />
-        {fieldError?.field === "name" ? <em className={styles.fieldError}>{fieldError.message}</em> : null}
-      </label>
+      <div className={styles.grid2}>
+        <label className={styles.field}>
+          <span>Nombre</span>
+          <input value={formState.name} onChange={(event) => updateField("name", event.target.value)} required />
+          {fieldError?.field === "name" ? <em className={styles.fieldError}>{fieldError.message}</em> : null}
+        </label>
 
-      <label className={styles.field}>
-        <span>Slug</span>
-        <input value={formState.slug} onChange={(event) => updateField("slug", event.target.value)} required />
-        {fieldError?.field === "slug" ? <em className={styles.fieldError}>{fieldError.message}</em> : null}
-      </label>
+        <label className={styles.field}>
+          <span>Slug</span>
+          <input value={formState.slug} onChange={(event) => updateField("slug", event.target.value)} required />
+          {fieldError?.field === "slug" ? <em className={styles.fieldError}>{fieldError.message}</em> : null}
+        </label>
 
-      <label className={styles.field}>
-        <span>SKU base</span>
-        <input value={formState.skuBase} onChange={(event) => updateField("skuBase", event.target.value)} required />
-        {fieldError?.field === "skuBase" ? <em className={styles.fieldError}>{fieldError.message}</em> : null}
-      </label>
+        <label className={styles.field}>
+          <span>SKU base</span>
+          <input value={formState.skuBase} onChange={(event) => updateField("skuBase", event.target.value)} required />
+          {fieldError?.field === "skuBase" ? <em className={styles.fieldError}>{fieldError.message}</em> : null}
+        </label>
 
-      <label className={styles.field}>
-        <span>Bajada</span>
-        <input value={formState.tagline} onChange={(event) => updateField("tagline", event.target.value)} />
-      </label>
+        <label className={styles.field}>
+          <span>Bajada</span>
+          <input value={formState.tagline} onChange={(event) => updateField("tagline", event.target.value)} />
+        </label>
+      </div>
 
       <label className={styles.field}>
         <span>Descripción corta</span>
@@ -274,18 +276,24 @@ export default function AdminProductForm({ product = null, productId = null }) {
 
         {formState.media.map((asset, index) => (
           <div className={styles.mediaRow} key={index}>
-            <input
-              type="url"
-              placeholder="URL de imagen"
-              value={asset.url}
-              onChange={(event) => updateMedia(index, "url", event.target.value)}
-              required
-            />
-            <input
-              placeholder="Texto alternativo (opcional)"
-              value={asset.alt}
-              onChange={(event) => updateMedia(index, "alt", event.target.value)}
-            />
+            <label>
+              <span className={styles.srOnly}>{`URL de imagen ${index + 1}`}</span>
+              <input
+                type="url"
+                placeholder="URL de imagen"
+                value={asset.url}
+                onChange={(event) => updateMedia(index, "url", event.target.value)}
+                required
+              />
+            </label>
+            <label>
+              <span className={styles.srOnly}>{`Texto alternativo de imagen ${index + 1}`}</span>
+              <input
+                placeholder="Texto alternativo (opcional)"
+                value={asset.alt}
+                onChange={(event) => updateMedia(index, "alt", event.target.value)}
+              />
+            </label>
             <button type="button" onClick={() => removeMedia(index)} disabled={formState.media.length === 1}>
               Quitar
             </button>
@@ -306,40 +314,66 @@ export default function AdminProductForm({ product = null, productId = null }) {
           <em className={styles.fieldError}>{fieldError.message}</em>
         ) : null}
 
+        {formState.variants.length ? (
+          <div className={styles.variantHeader} aria-hidden="true">
+            <span>SKU</span>
+            <span>Título</span>
+            <span>Precio (¢)</span>
+            <span>Precio tachado (¢)</span>
+            <span>Stock</span>
+            <span />
+          </div>
+        ) : null}
+
         {formState.variants.map((variant, index) => (
           <div className={styles.variantRow} key={index}>
-            <input
-              placeholder="SKU"
-              value={variant.sku}
-              onChange={(event) => updateVariant(index, "sku", event.target.value)}
-              required
-            />
-            <input
-              placeholder="Título (ej: Queen 160x200)"
-              value={variant.title}
-              onChange={(event) => updateVariant(index, "title", event.target.value)}
-              required
-            />
-            <input
-              type="number"
-              placeholder="Precio (centavos)"
-              value={variant.priceCents}
-              onChange={(event) => updateVariant(index, "priceCents", event.target.value)}
-              required
-            />
-            <input
-              type="number"
-              placeholder="Precio comparado (opcional)"
-              value={variant.compareAtPriceCents}
-              onChange={(event) => updateVariant(index, "compareAtPriceCents", event.target.value)}
-            />
-            <input
-              type="number"
-              placeholder="Stock"
-              value={variant.stockQuantity}
-              onChange={(event) => updateVariant(index, "stockQuantity", event.target.value)}
-              required
-            />
+            <label>
+              <span className={styles.srOnly}>{`SKU de variante ${index + 1}`}</span>
+              <input
+                placeholder="SKU"
+                value={variant.sku}
+                onChange={(event) => updateVariant(index, "sku", event.target.value)}
+                required
+              />
+            </label>
+            <label>
+              <span className={styles.srOnly}>{`Título de variante ${index + 1}`}</span>
+              <input
+                placeholder="Título (ej: Queen 160x200)"
+                value={variant.title}
+                onChange={(event) => updateVariant(index, "title", event.target.value)}
+                required
+              />
+            </label>
+            <label>
+              <span className={styles.srOnly}>{`Precio en centavos de variante ${index + 1}`}</span>
+              <input
+                type="number"
+                placeholder="Precio (centavos)"
+                value={variant.priceCents}
+                onChange={(event) => updateVariant(index, "priceCents", event.target.value)}
+                required
+              />
+            </label>
+            <label>
+              <span className={styles.srOnly}>{`Precio comparado de variante ${index + 1}`}</span>
+              <input
+                type="number"
+                placeholder="Precio comparado (opcional)"
+                value={variant.compareAtPriceCents}
+                onChange={(event) => updateVariant(index, "compareAtPriceCents", event.target.value)}
+              />
+            </label>
+            <label>
+              <span className={styles.srOnly}>{`Stock de variante ${index + 1}`}</span>
+              <input
+                type="number"
+                placeholder="Stock"
+                value={variant.stockQuantity}
+                onChange={(event) => updateVariant(index, "stockQuantity", event.target.value)}
+                required
+              />
+            </label>
             <button type="button" onClick={() => removeVariant(index)} disabled={formState.variants.length === 1}>
               Quitar
             </button>
