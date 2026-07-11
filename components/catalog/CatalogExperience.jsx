@@ -531,10 +531,6 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
           <h2 className={styles.sectionTitle}>Elegí y compará</h2>
         </div>
         <div className={styles.decisionPanelActions}>
-          <div className={styles.resultPill} aria-live="polite">
-            <strong>{model.resultCount}</strong>
-            <span>resultado{model.resultCount === 1 ? "" : "s"}</span>
-          </div>
           <button
             type="button"
             className={styles.clearBtn}
