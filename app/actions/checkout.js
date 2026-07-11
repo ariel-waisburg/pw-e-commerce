@@ -9,6 +9,7 @@ import { serverEnv } from "@/lib/env/server";
 import { createPreference } from "@/lib/mercadopago/server";
 import { getOrderById, serializeOrderRecord, updateOrderFromMercadoPagoPayment } from "@/lib/orders/server";
 import { getSupabaseServiceRole } from "@/lib/supabase/server";
+import { requireCustomerSession } from "@/lib/supabase/customer-auth";
 
 const supabase = () => getSupabaseServiceRole();
 
@@ -53,6 +54,11 @@ function toPreferenceItems(cart) {
 }
 
 export async function createCheckoutPreferenceAction(rawInput) {
+  const { session, error: sessionError } = await requireCustomerSession();
+  if (sessionError) {
+    throw sessionError;
+  }
+
   const parsed = checkoutSchema.safeParse(rawInput);
   if (!parsed.success) {
     const issue = parsed.error.issues[0];
@@ -73,10 +79,20 @@ export async function createCheckoutPreferenceAction(rawInput) {
   const shippingCents = cart.shipping_cents ?? 0;
   const discountCents = cart.discount_cents ?? 0;
 
+  const { error: cartClaimError } = await supabase()
+    .from("carts")
+    .update({ customer_id: session.user.id })
+    .eq("id", cart.id);
+
+  if (cartClaimError) {
+    throw new Error(cartClaimError.message);
+  }
+
   const { data: order, error: orderError } = await supabase()
     .from("orders")
     .insert({
       cart_id: cart.id,
+      customer_id: session.user.id,
       status: "pending",
       payment_status: "pending",
       currency_code: cart.currency_code ?? "ARS",
