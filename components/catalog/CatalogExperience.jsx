@@ -449,7 +449,7 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
     replaceState({
       ...model.state,
       category: nextCategory,
-      saleType: nextCategory ? null : model.state.saleType,
+      saleType: nextCategory ? [] : model.state.saleType,
     });
   };
 
@@ -508,7 +508,7 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
                     href={buildCatalogStateHref({
                       ...model.state,
                       category: category.slug,
-                      saleType: null,
+                      saleType: [],
                     })}
                     className={styles.choiceBtn}
                   >
@@ -577,9 +577,8 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
             <FilterCollapseGroup
               title="Medida"
               options={model.filterOptions.measures}
-              values={model.state.measure}
-              onChange={(value) => handleFieldChange("measure", value)}
-              exclusive
+              values={model.state.measures}
+              onChange={(value) => handleFieldChange("measures", value)}
             />
 
             <FilterCollapseGroup
@@ -590,7 +589,6 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
               }))}
               values={model.state.saleType}
               onChange={(value) => handleFieldChange("saleType", value)}
-              exclusive
             />
 
             <FilterCollapseGroup
