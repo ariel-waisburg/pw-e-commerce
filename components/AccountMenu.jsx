@@ -32,7 +32,11 @@ export default function AccountMenu() {
 
   async function handleLogout() {
     const supabase = getSupabaseBrowserClient();
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (signOutError) {
+      console.error("Error al cerrar sesión:", signOutError);
+    }
     router.replace("/");
     router.refresh();
   }

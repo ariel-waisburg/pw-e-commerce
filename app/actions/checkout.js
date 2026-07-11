@@ -85,6 +85,9 @@ export async function createCheckoutPreferenceAction(rawInput) {
     .eq("id", cart.id);
 
   if (cartClaimError) {
+    if (cartClaimError.code === "23503") {
+      throw new Error("No pudimos asociar tu cuenta a la compra. Cerrá sesión y volvé a intentar.");
+    }
     throw new Error(cartClaimError.message);
   }
 
@@ -108,6 +111,9 @@ export async function createCheckoutPreferenceAction(rawInput) {
     .single();
 
   if (orderError) {
+    if (orderError.code === "23503") {
+      throw new Error("No pudimos asociar tu cuenta a la orden. Cerrá sesión y volvé a intentar.");
+    }
     throw new Error(orderError.message);
   }
 

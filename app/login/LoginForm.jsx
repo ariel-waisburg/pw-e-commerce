@@ -9,7 +9,8 @@ import styles from "./login.module.css";
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") || "/";
+  const rawNext = searchParams.get("next");
+  const next = rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/";
   const justRegistered = searchParams.get("registered") === "1";
 
   const [email, setEmail] = useState("");
@@ -56,7 +57,7 @@ export default function LoginForm() {
         />
       </label>
 
-      {error ? <p className={styles.error}>{error}</p> : null}
+      {error ? <p className={styles.error} role="alert">{error}</p> : null}
 
       <button type="submit" className={styles.submit} disabled={isSubmitting}>
         {isSubmitting ? "Ingresando..." : "Ingresar"}

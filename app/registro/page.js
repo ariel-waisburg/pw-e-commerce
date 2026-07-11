@@ -109,7 +109,11 @@ export default function RegistroPage() {
           ) : null}
         </label>
 
-        {fieldError && !fieldError.field ? <p className={styles.error}>{fieldError.message}</p> : null}
+        {fieldError && !fieldError.field ? (
+          <p className={styles.error} role="alert">
+            {fieldError.message}
+          </p>
+        ) : null}
 
         <button type="submit" className={styles.submit} disabled={isSubmitting}>
           {isSubmitting ? "Creando cuenta..." : "Crear cuenta"}
