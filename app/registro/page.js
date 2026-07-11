@@ -79,7 +79,7 @@ export default function RegistroPage() {
   async function verifyCode() {
     const token = normalizeOtpCode(code);
     if (!token) {
-      setFieldError({ field: "code", message: "Ingresá el código de 6 dígitos que te enviamos por email" });
+      setFieldError({ field: "code", message: "Ingresá el código de 8 dígitos que te enviamos por email" });
       return;
     }
 
@@ -117,7 +117,6 @@ export default function RegistroPage() {
 
     setIsSubmitting(false);
     router.replace("/");
-    router.refresh();
   }
 
   async function handleSubmit(event) {
@@ -143,7 +142,7 @@ export default function RegistroPage() {
       <form className={styles.card} onSubmit={handleSubmit}>
         <h1 className={styles.title}>Crear cuenta</h1>
         {phase === PHASE_CODE ? (
-          <p className={styles.notice}>Te enviamos un código de 6 dígitos a {form.email}.</p>
+          <p className={styles.notice}>Te enviamos un código de 8 dígitos a {form.email}.</p>
         ) : null}
 
         <label className={styles.field}>
@@ -176,8 +175,8 @@ export default function RegistroPage() {
               type="text"
               inputMode="numeric"
               autoComplete="one-time-code"
-              pattern="[0-9]{6}"
-              maxLength={7}
+              pattern="[0-9]{8}"
+              maxLength={8}
               value={code}
               onChange={(event) => setCode(event.target.value)}
               autoFocus

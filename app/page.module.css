@@ -221,25 +221,6 @@
   line-height: 1.55;
 }
 
-.catalogSupportRow {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-bottom: 28px;
-}
-
-.catalogSupportPoint {
-  margin: 0;
-  padding: 14px 16px;
-  border-radius: 18px;
-  border: 1px solid rgba(39, 194, 199, 0.16);
-  background: rgba(39, 194, 199, 0.08);
-  color: var(--color-primary);
-  font-size: 0.94rem;
-  font-weight: 700;
-  line-height: 1.45;
-}
-
 .previewGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -450,7 +431,6 @@
   }
 
   .catalogQuickLinks,
-  .catalogSupportRow,
   .previewGrid {
     grid-template-columns: 1fr;
   }

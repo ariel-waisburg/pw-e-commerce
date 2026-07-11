@@ -87,14 +87,6 @@ export default async function Home() {
             ))}
           </div>
 
-          <div className={styles.catalogSupportRow}>
-            {homepage.catalogPreview.supportPoints.map((point) => (
-              <p key={point} className={styles.catalogSupportPoint}>
-                {point}
-              </p>
-            ))}
-          </div>
-
           <div className={styles.previewGrid}>
             {homepage.catalogPreview.featuredProducts.map((product) => (
               <ProductCard key={product.id} product={product} featured />

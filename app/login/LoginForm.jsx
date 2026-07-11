@@ -61,7 +61,7 @@ export default function LoginForm() {
   async function verifyCode() {
     const token = normalizeOtpCode(code);
     if (!token) {
-      setError("Ingresá el código de 6 dígitos que te enviamos por email.");
+      setError("Ingresá el código de 8 dígitos que te enviamos por email.");
       return;
     }
 
@@ -79,7 +79,6 @@ export default function LoginForm() {
     }
 
     router.replace(next);
-    router.refresh();
   }
 
   async function handleSubmit(event) {
@@ -107,7 +106,7 @@ export default function LoginForm() {
         <p className={styles.notice}>Cuenta creada. Ingresá tu email y te mandamos un código.</p>
       ) : null}
       {phase === PHASE_CODE ? (
-        <p className={styles.notice}>Te enviamos un código de 6 dígitos a {email}.</p>
+        <p className={styles.notice}>Te enviamos un código de 8 dígitos a {email}.</p>
       ) : null}
 
       <label className={styles.field}>
@@ -128,8 +127,8 @@ export default function LoginForm() {
             type="text"
             inputMode="numeric"
             autoComplete="one-time-code"
-            pattern="[0-9]{6}"
-            maxLength={7}
+            pattern="[0-9]{8}"
+            maxLength={8}
             value={code}
             onChange={(event) => setCode(event.target.value)}
             autoFocus

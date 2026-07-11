@@ -64,7 +64,6 @@
 }
 
 .searchBar button,
-.clearBtn,
 .emptyAction {
   min-height: 52px;
   padding: 0 18px;
@@ -561,33 +560,33 @@
 
 .decisionPanelActions {
   display: flex;
-  align-items: stretch;
-  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
   width: 100%;
   flex-shrink: 0;
+  margin-top: 4px;
 }
 
 .resultPill {
-  display: flex;
-  flex: 1 1 auto;
-  min-width: 128px;
-  min-height: 52px;
-  flex-direction: column;
-  justify-content: center;
-  padding: 7px 14px;
-  border-radius: 16px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  width: fit-content;
+  min-height: 40px;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
   border: 1px solid rgba(15, 143, 149, 0.18);
   background: var(--color-accent-soft);
   color: var(--color-primary);
 }
 
 .resultPill strong {
-  font-size: 1.35rem;
+  font-size: 1.1rem;
   line-height: 1;
 }
 
 .resultPill span {
-  margin-top: 2px;
   color: var(--color-text-secondary);
   font-size: 0.72rem;
   font-weight: 800;
@@ -706,8 +705,22 @@
 
 .clearBtn {
   flex: 0 0 auto;
-  background: rgba(18, 58, 63, 0.08);
+  margin-left: auto;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(18, 58, 63, 0.14);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.clearBtn:hover {
+  background: rgba(18, 58, 63, 0.06);
   color: var(--color-primary);
+  border-color: rgba(18, 58, 63, 0.24);
 }
 
 .resultsHeader {
@@ -917,14 +930,8 @@
   .choiceBtn,
   .activeChip,
   .inlineLink,
-  .emptyAction,
-  .clearBtn,
-  .resultPill {
+  .emptyAction {
     width: 100%;
-  }
-
-  .decisionPanelActions {
-    flex-direction: column;
   }
 
   .budgetRangeHeader {

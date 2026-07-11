@@ -3,9 +3,10 @@
   "configurations": [
     {
       "name": "dev",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "port": 3000
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [".claude/dev-node20.sh"],
+      "port": 3000,
+      "autoPort": true
     },
     {
       "name": "start",
