@@ -1,4 +1,9 @@
-import { CANONICAL_MEASURE_CODES, formatVariantLabel, getVisiblePlazaFromMeasure } from "../lib/products/catalog.mjs";
+import {
+  CANONICAL_MEASURE_CODES,
+  formatVariantLabel,
+  getVisiblePlazaFromMeasure,
+  PLAZA_ORDER,
+} from "../lib/products/catalog.mjs";
 import { LINE_DEFINITIONS } from "../lib/products/catalog-config.mjs";
 
 const SALE_TYPE_DEFINITIONS = {
@@ -62,7 +67,7 @@ const LINE_PRICE_BASE = {
 };
 
 const LINE_PRICE_STEP = {
-  "Classic Rest": 7000,
+  "Classic Rest": 22000,
   "Classic Special": 24000,
   "High Rest": 32000,
   "Superior Rest": 38000,
@@ -95,10 +100,11 @@ function slugify(value) {
 }
 
 function buildVariants({ productId, measureCodes, basePrice, priceStep, heightCm }) {
-  return measureCodes.map((measureCode, index) => {
+  return measureCodes.map((measureCode) => {
     const [widthCm, lengthCm] = measureCode.split("x").map((value) => Number.parseInt(value, 10));
-    const price = basePrice + index * priceStep;
     const plaza = getVisiblePlazaFromMeasure(measureCode);
+    const plazaIndex = Math.max(PLAZA_ORDER.indexOf(plaza), 0);
+    const price = basePrice + plazaIndex * priceStep;
 
     return {
       id: `${productId}-${measureCode}`,
