@@ -1,0 +1,123 @@
+.page {
+  min-height: calc(100vh - 64px);
+  padding: 32px 24px 64px;
+  background: var(--color-surface);
+}
+
+.layout {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.kicker {
+  margin: 0 0 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.pageTitle {
+  margin: 0 0 24px;
+  font-size: 1.875rem;
+  line-height: 1.2;
+  color: var(--color-primary);
+}
+
+.emptyState {
+  padding: 48px 32px;
+  text-align: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  display: grid;
+  gap: 20px;
+  justify-items: center;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.cardLink {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.cardLink:hover,
+.cardLink:focus-visible {
+  background: var(--color-surface-alt);
+  outline: none;
+}
+
+.cardNumber {
+  margin: 0;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.cardDate {
+  margin: 4px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.cardMeta {
+  display: grid;
+  gap: 6px;
+  text-align: right;
+  color: var(--color-text-secondary);
+}
+
+.cardStatus {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.primaryButton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--color-accent);
+  color: var(--color-surface);
+  font-weight: 600;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 24px 16px 48px;
+  }
+
+  .cardLink {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cardMeta {
+    text-align: left;
+  }
+}
