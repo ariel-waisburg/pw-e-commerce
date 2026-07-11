@@ -149,27 +149,49 @@ function ChoiceGroup({
   );
 }
 
-function SelectFilter({ label, description, options, value, onChange, allLabel = "Todas" }) {
-  const selectId = useId();
+function FilterCollapseGroup({ title, options, values, onChange, exclusive = false, defaultOpen = false }) {
+  const groupId = useId();
+  const selectedValues = exclusive ? (values ? [values] : []) : values ?? [];
+  const isOpen = defaultOpen || selectedValues.length > 0;
+
+  const toggleValue = (optionValue) => {
+    if (exclusive) {
+      onChange(values === optionValue ? null : optionValue);
+      return;
+    }
+
+    const next = selectedValues.includes(optionValue)
+      ? selectedValues.filter((entry) => entry !== optionValue)
+      : [...selectedValues, optionValue];
+    onChange(next);
+  };
 
   return (
-    <label className={styles.selectFilter} htmlFor={selectId}>
-      <span className={styles.selectFilterLabel}>{label}</span>
-      {description ? <span className={styles.selectFilterDescription}>{description}</span> : null}
-      <select
-        id={selectId}
-        className={styles.selectFilterInput}
-        value={value ?? ""}
-        onChange={(event) => onChange(event.target.value || null)}
-      >
-        <option value="">{allLabel}</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </label>
+    <details className={styles.filterCollapseGroup} open={isOpen}>
+      <summary className={styles.filterCollapseSummary}>
+        {title}
+        {selectedValues.length ? (
+          <span className={styles.filterCollapseCount}>{selectedValues.length}</span>
+        ) : null}
+      </summary>
+      <div className={styles.filterCollapseOptions}>
+        {options.map((option) => {
+          const inputId = `${groupId}-${option.value}`;
+          return (
+            <label key={option.value} className={styles.filterCollapseOption} htmlFor={inputId}>
+              <input
+                id={inputId}
+                type={exclusive ? "radio" : "checkbox"}
+                name={exclusive ? groupId : undefined}
+                checked={selectedValues.includes(option.value)}
+                onChange={() => toggleValue(option.value)}
+              />
+              <span>{option.label}</span>
+            </label>
+          );
+        })}
+      </div>
+    </details>
   );
 }
 
@@ -530,12 +552,12 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
             <div className={styles.activeChipRow}>
               {activeDecisionChips.map((chip) => (
                 <button
-                  key={`${chip.kind}-${chip.key}`}
+                  key={`${chip.kind}-${chip.key}-${chip.value}`}
                   type="button"
                   className={`${styles.activeChip} ${
                     chip.kind === "selector" ? styles.activeChipGuided : ""
                   }`}
-                  onClick={() => replaceState(removeCatalogStateKey(model.state, chip.key))}
+                  onClick={() => replaceState(removeCatalogStateKey(model.state, chip.key, chip.value))}
                 >
                   {chip.label} <span aria-hidden="true">×</span>
                 </button>
@@ -551,28 +573,28 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
 
       {!model.isAccessoryMode ? (
         <>
-          <div className={styles.decisionControls}>
-            <SelectFilter
-              label="Medida"
+          <div className={styles.filterCollapseList}>
+            <FilterCollapseGroup
+              title="Medida"
               options={model.filterOptions.measures}
-              value={model.state.measure}
+              values={model.state.measure}
               onChange={(value) => handleFieldChange("measure", value)}
-              allLabel="Todas las medidas"
+              exclusive
             />
 
-            <SelectFilter
-              label="Presentación"
+            <FilterCollapseGroup
+              title="Presentación"
               options={model.filterOptions.saleTypes.map((option) => ({
                 value: option.value,
                 label: option.value === "mattress" ? "Solo colchón" : "Colchón + sommier",
               }))}
-              value={model.state.saleType}
+              values={model.state.saleType}
               onChange={(value) => handleFieldChange("saleType", value)}
-              allLabel="Todas"
+              exclusive
             />
 
-            <SelectFilter
-              label="Tecnología"
+            <FilterCollapseGroup
+              title="Tecnología"
               options={model.filterOptions.technologies.map((option) => ({
                 value: option.value,
                 label:
@@ -582,40 +604,31 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
                       ? "Resortes pocket"
                       : option.label,
               }))}
-              value={model.state.technology}
+              values={model.state.technology}
               onChange={(value) => handleFieldChange("technology", value)}
-              allLabel="Todas"
+            />
+
+            <FilterCollapseGroup
+              title="Aislación de movimiento"
+              options={model.filterOptions.motionIsolationLevels}
+              values={model.state.motionIsolation}
+              onChange={(value) => handleFieldChange("motionIsolation", value)}
+            />
+
+            <FilterCollapseGroup
+              title="Altura"
+              options={model.filterOptions.heightProfiles}
+              values={model.state.heightProfile}
+              onChange={(value) => handleFieldChange("heightProfile", value)}
+            />
+
+            <FilterCollapseGroup
+              title="Disponibilidad"
+              options={model.filterOptions.availability}
+              values={model.state.availability}
+              onChange={(value) => handleFieldChange("availability", value)}
             />
           </div>
-
-          <details className={styles.advancedFilters}>
-            <summary>Más criterios de comparación</summary>
-            <div className={styles.advancedFilterGrid}>
-              <ChoiceGroup
-                title="Aislación de movimiento"
-                options={model.filterOptions.motionIsolationLevels}
-                value={model.state.motionIsolation}
-                onChange={(value) => handleFieldChange("motionIsolation", value)}
-                className={styles.advancedFilterGroup}
-              />
-
-              <ChoiceGroup
-                title="Altura"
-                options={model.filterOptions.heightProfiles}
-                value={model.state.heightProfile}
-                onChange={(value) => handleFieldChange("heightProfile", value)}
-                className={styles.advancedFilterGroup}
-              />
-
-              <ChoiceGroup
-                title="Disponibilidad"
-                options={model.filterOptions.availability}
-                value={model.state.availability}
-                onChange={(value) => handleFieldChange("availability", value)}
-                className={styles.advancedFilterGroup}
-              />
-            </div>
-          </details>
         </>
       ) : null}
     </section>
@@ -656,11 +669,6 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
             Buscar
           </button>
         </form>
-        <div className={styles.heroPills} aria-label="Qué podés comparar">
-          <span>Medida</span>
-          <span>Presentación</span>
-          <span>Tecnología</span>
-        </div>
       </section>
 
       <div className={styles.categoryRow}>

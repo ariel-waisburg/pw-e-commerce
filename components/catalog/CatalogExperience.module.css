@@ -81,26 +81,6 @@
   font-size: 0.86rem;
 }
 
-.heroPills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 14px;
-}
-
-.heroPills span {
-  display: inline-flex;
-  min-height: 34px;
-  align-items: center;
-  border-radius: var(--radius-full);
-  border: 1px solid rgba(18, 58, 63, 0.1);
-  background: #fff;
-  color: var(--color-primary);
-  padding: 0 13px;
-  font-size: 0.84rem;
-  font-weight: 700;
-}
-
 .categoryRow {
   display: flex;
   flex-wrap: wrap;
@@ -288,11 +268,11 @@
 
 .questionHelpTrigger:focus-visible,
 .activeChip:focus-visible,
-.advancedFilters summary:focus-visible,
+.filterCollapseSummary:focus-visible,
+.filterCollapseOption input:focus-visible,
 .budgetClearBtn:focus-visible,
 .budgetInputGroup input:focus-visible,
 .selectField:focus-visible,
-.selectFilterInput:focus-visible,
 .choiceBtn:focus-visible,
 .searchBar input:focus-visible,
 .searchBar button:focus-visible,
@@ -407,8 +387,7 @@
 .resultsCount,
 .activeChipLabel,
 .relatedLabel,
-.decisionEyebrow,
-.selectFilterLabel {
+.decisionEyebrow {
   font-size: 0.76rem;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -652,68 +631,60 @@
   line-height: 1.5;
 }
 
-.decisionControls {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+.filterCollapseList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.selectFilter {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px;
-  border-radius: 18px;
-  border: 1px solid rgba(18, 58, 63, 0.08);
+.filterCollapseGroup {
+  border: 1px solid rgba(18, 58, 63, 0.12);
+  border-radius: 12px;
+  padding: 0;
   background: #fff;
 }
 
-.selectFilterLabel {
-  color: var(--color-primary-light);
-}
-
-.selectFilterDescription {
-  color: var(--color-text-secondary);
-  font-size: 0.84rem;
-  line-height: 1.42;
-}
-
-.selectFilterInput {
-  width: 100%;
-  min-height: 46px;
-  border-radius: 14px;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text-primary);
-  padding: 0 12px;
-  font: inherit;
-  cursor: pointer;
-}
-
-.advancedFilters {
-  margin-top: 14px;
-  border-top: 1px solid rgba(18, 58, 63, 0.08);
-}
-
-.advancedFilters summary {
+.filterCollapseSummary {
   display: flex;
   align-items: center;
-  min-height: 44px;
-  color: var(--color-primary);
-  font-size: 0.9rem;
-  font-weight: 800;
+  gap: 8px;
+  padding: 12px 14px;
   cursor: pointer;
+  font-weight: 700;
+  color: var(--color-primary);
+  list-style: none;
 }
 
-.advancedFilterGrid {
-  display: grid;
-  gap: 14px;
-  padding-top: 4px;
+.filterCollapseSummary::-webkit-details-marker {
+  display: none;
 }
 
-.advancedFilterGroup {
-  padding: 0 0 14px;
+.filterCollapseCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 0.75rem;
+}
+
+.filterCollapseOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 14px 14px;
+}
+
+.filterCollapseOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
 }
 
 .catalogLayout {
@@ -893,10 +864,6 @@
     position: static;
     max-height: none;
   }
-
-  .decisionControls {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 768px) {
@@ -936,8 +903,7 @@
   }
 
   .searchBar,
-  .budgetInputGrid,
-  .decisionControls {
+  .budgetInputGrid {
     grid-template-columns: 1fr;
   }
 
