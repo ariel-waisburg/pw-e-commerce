@@ -63,6 +63,9 @@ export default function AccountMenu() {
   return (
     <div className={styles.menu}>
       <span className={styles.greeting}>Hola, {displayName}</span>
+      <Link href="/mis-pedidos" className={styles.link}>
+        Mis pedidos
+      </Link>
       <button type="button" className={styles.logout} onClick={handleLogout}>
         Salir
       </button>
