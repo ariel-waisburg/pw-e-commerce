@@ -1,6 +1,7 @@
 import CatalogExperience from "@/components/catalog/CatalogExperience";
 import fallbackProducts from "@/data/products";
 import { mapSupabaseProductToCardData, mapFallbackProducts } from "@/lib/products/mappers";
+import { isStorefrontProductVisible } from "@/lib/products/storefront-visibility.mjs";
 import { getCatalogProducts } from "@/lib/supabase/queries/products";
 
 export const revalidate = 60;
@@ -22,7 +23,7 @@ export default async function CatalogPage({ searchParams }) {
   const shouldUseFallback = errored || !productsRaw?.length;
   const allProducts = shouldUseFallback
     ? FALLBACK_PRODUCTS
-    : productsRaw.map(mapSupabaseProductToCardData).filter(Boolean);
+    : productsRaw.filter(isStorefrontProductVisible).map(mapSupabaseProductToCardData).filter(Boolean);
 
   return (
     <CatalogExperience

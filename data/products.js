@@ -294,6 +294,6 @@ const accessoryProducts = [
   },
 ];
 
-const fallbackProducts = [...coreProducts, ...pillowProducts, ...accessoryProducts];
+const fallbackProducts = [...coreProducts];
 
 export default fallbackProducts;

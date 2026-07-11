@@ -1,10 +1,10 @@
 .page {
   max-width: var(--container-max);
   margin: 0 auto;
-  padding: 40px 24px 80px;
+  padding: 28px 24px 72px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 20px;
 }
 
 .hero,
@@ -19,9 +19,8 @@
 }
 
 .hero {
-  padding: 28px;
+  padding: 24px;
   background:
-    radial-gradient(circle at top left, rgba(84, 221, 202, 0.2), transparent 34%),
     linear-gradient(180deg, rgba(248, 245, 239, 0.98), rgba(255, 255, 255, 0.98));
 }
 
@@ -33,7 +32,8 @@
 }
 
 .heroTitle {
-  font-size: clamp(2rem, 4vw, 3rem);
+  max-width: 780px;
+  font-size: clamp(2rem, 4vw, 2.8rem);
   line-height: 1.08;
 }
 
@@ -49,7 +49,7 @@
 }
 
 .searchBar {
-  margin-top: 24px;
+  margin-top: 18px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
@@ -79,6 +79,26 @@
 .searchHint {
   margin-top: 10px;
   font-size: 0.86rem;
+}
+
+.heroPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.heroPills span {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(18, 58, 63, 0.1);
+  background: #fff;
+  color: var(--color-primary);
+  padding: 0 13px;
+  font-size: 0.84rem;
+  font-weight: 700;
 }
 
 .categoryRow {
@@ -128,11 +148,12 @@
 .selectorSection,
 .filtersSection,
 .resultsSection {
-  padding: 24px;
+  padding: 20px;
 }
 
 .selectorHeader,
 .filtersHeader,
+.decisionPanelHeader,
 .resultsHeader,
 .recommendationHeader {
   display: flex;
@@ -147,14 +168,17 @@
   line-height: 1.1;
 }
 
+.filtersSection .sectionTitle {
+  font-size: clamp(1.35rem, 2vw, 1.65rem);
+}
+
 .selectorGrid {
-  margin-top: 20px;
+  margin-top: 16px;
   display: grid;
-  gap: 20px;
+  gap: 16px;
 }
 
 .selectorCard,
-.filterCard,
 .recommendationAltCard,
 .recommendationEmpty,
 .emptyState {
@@ -166,8 +190,8 @@
 .selectorCard {
   display: flex;
   flex-direction: column;
-  gap: 22px;
-  padding: 20px;
+  gap: 18px;
+  padding: 18px;
 }
 
 .recommendationSidebar {
@@ -210,12 +234,12 @@
 .questionHeadingCopy {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .questionTitle {
   color: var(--color-text-primary);
-  font-size: 1rem;
+  font-size: 0.98rem;
   line-height: 1.35;
   font-weight: 700;
 }
@@ -263,9 +287,12 @@
 }
 
 .questionHelpTrigger:focus-visible,
+.activeChip:focus-visible,
+.advancedFilters summary:focus-visible,
 .budgetClearBtn:focus-visible,
 .budgetInputGroup input:focus-visible,
 .selectField:focus-visible,
+.selectFilterInput:focus-visible,
 .choiceBtn:focus-visible,
 .searchBar input:focus-visible,
 .searchBar button:focus-visible,
@@ -348,7 +375,7 @@
 .choiceGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .choiceBtn {
@@ -361,8 +388,8 @@
 .budgetRangeCard {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 16px 18px;
+  gap: 14px;
+  padding: 14px;
   border-radius: 20px;
   border: 1px solid rgba(22, 58, 63, 0.08);
   background: rgba(255, 255, 255, 0.9);
@@ -379,7 +406,9 @@
 .recommendationMeta,
 .resultsCount,
 .activeChipLabel,
-.relatedLabel {
+.relatedLabel,
+.decisionEyebrow,
+.selectFilterLabel {
   font-size: 0.76rem;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -528,11 +557,74 @@
   width: fit-content;
 }
 
-.activeChipsWrap {
+.decisionPanelHeader {
+  flex-direction: column;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(18, 58, 63, 0.08);
+}
+
+.decisionPanelCopy {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin: 18px 0;
+  gap: 8px;
+}
+
+.decisionEyebrow {
+  color: var(--color-accent-strong);
+}
+
+.decisionIntro {
+  max-width: 58ch;
+  color: var(--color-text-secondary);
+  font-size: 0.94rem;
+  line-height: 1.58;
+}
+
+.decisionPanelActions {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.resultPill {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 128px;
+  min-height: 52px;
+  flex-direction: column;
+  justify-content: center;
+  padding: 7px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 143, 149, 0.18);
+  background: var(--color-accent-soft);
+  color: var(--color-primary);
+}
+
+.resultPill strong {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.resultPill span {
+  margin-top: 2px;
+  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.decisionSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 14px 0;
+  padding: 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(18, 58, 63, 0.08);
+  background: rgba(245, 248, 246, 0.78);
 }
 
 .activeChipRow {
@@ -547,10 +639,87 @@
   gap: 8px;
 }
 
+.activeChipGuided {
+  border-color: rgba(15, 143, 149, 0.24);
+  background: rgba(39, 194, 199, 0.12);
+  color: var(--color-primary);
+}
+
+.decisionSummaryEmpty {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.decisionControls {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.selectFilter {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(18, 58, 63, 0.08);
+  background: #fff;
+}
+
+.selectFilterLabel {
+  color: var(--color-primary-light);
+}
+
+.selectFilterDescription {
+  color: var(--color-text-secondary);
+  font-size: 0.84rem;
+  line-height: 1.42;
+}
+
+.selectFilterInput {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  padding: 0 12px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.advancedFilters {
+  margin-top: 14px;
+  border-top: 1px solid rgba(18, 58, 63, 0.08);
+}
+
+.advancedFilters summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-primary);
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.advancedFilterGrid {
+  display: grid;
+  gap: 14px;
+  padding-top: 4px;
+}
+
+.advancedFilterGroup {
+  padding: 0 0 14px;
+}
+
 .catalogLayout {
   display: grid;
-  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
-  gap: 24px;
+  grid-template-columns: minmax(240px, 292px) minmax(0, 1fr);
+  gap: 20px;
 }
 
 .filtersSidebar {
@@ -564,23 +733,14 @@
   overflow-y: auto;
 }
 
-.filterGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-}
-
-.filterCard {
-  padding: 16px;
-}
-
 .clearBtn {
+  flex: 0 0 auto;
   background: rgba(18, 58, 63, 0.08);
   color: var(--color-primary);
 }
 
 .resultsHeader {
-  margin-bottom: 18px;
+  margin-bottom: 16px;
   align-items: baseline;
 }
 
@@ -594,8 +754,8 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 18px;
 }
 
 .emptyState {
@@ -604,7 +764,19 @@
 }
 
 .emptyIcon {
-  font-size: 3rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 62px;
+  height: 62px;
+  border-radius: 18px;
+  border: 1px solid rgba(15, 143, 149, 0.16);
+  background: var(--color-accent-soft);
+  color: var(--color-primary);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .emptyState h3 {
@@ -722,8 +894,8 @@
     max-height: none;
   }
 
-  .filterGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .decisionControls {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -743,6 +915,7 @@
   .searchBar,
   .selectorHeader,
   .filtersHeader,
+  .decisionPanelHeader,
   .resultsHeader,
   .recommendationHeader {
     grid-template-columns: 1fr;
@@ -764,7 +937,7 @@
 
   .searchBar,
   .budgetInputGrid,
-  .filterGrid {
+  .decisionControls {
     grid-template-columns: 1fr;
   }
 
@@ -779,8 +952,13 @@
   .activeChip,
   .inlineLink,
   .emptyAction,
-  .clearBtn {
+  .clearBtn,
+  .resultPill {
     width: 100%;
+  }
+
+  .decisionPanelActions {
+    flex-direction: column;
   }
 
   .budgetRangeHeader {

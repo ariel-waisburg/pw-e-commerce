@@ -51,6 +51,11 @@
   font: inherit;
 }
 
+.field input:disabled {
+  background: var(--color-surface-alt);
+  color: var(--color-text-secondary);
+}
+
 .error {
   margin: 0;
   color: var(--color-error);
@@ -69,6 +74,27 @@
 
 .submit:disabled {
   opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.inlineActions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.textButton {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-accent-strong);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.textButton:disabled {
+  color: var(--color-text-muted);
   cursor: not-allowed;
 }
 

@@ -16,6 +16,7 @@ import {
   getCatalogStateFromSearchParams,
   getPdpContextSummary,
 } from "@/lib/products/catalog-discovery.mjs";
+import { isStorefrontProductVisible } from "@/lib/products/storefront-visibility.mjs";
 import { getProductBySlug } from "@/lib/supabase/queries/products";
 import styles from "./page.module.css";
 
@@ -124,14 +125,22 @@ export default async function ProductDetailPage({ params, searchParams }) {
   const resolvedSearchParams = await resolveSearchParams(searchParams);
   let product = null;
   let usedFallback = false;
+  let hiddenSupabaseProduct = false;
 
   try {
     const supabaseProduct = await getProductBySlug(slug);
     if (supabaseProduct) {
-      product = mapSupabaseProductToDetail(supabaseProduct);
+      hiddenSupabaseProduct = !isStorefrontProductVisible(supabaseProduct);
+      if (!hiddenSupabaseProduct) {
+        product = mapSupabaseProductToDetail(supabaseProduct);
+      }
     }
   } catch (error) {
     console.error(`Falling back to local product detail for ${slug}`, error);
+  }
+
+  if (hiddenSupabaseProduct) {
+    return notFound();
   }
 
   if (!product) {
@@ -143,6 +152,10 @@ export default async function ProductDetailPage({ params, searchParams }) {
   }
 
   if (!product) {
+    return notFound();
+  }
+
+  if (!isStorefrontProductVisible(product)) {
     return notFound();
   }
 

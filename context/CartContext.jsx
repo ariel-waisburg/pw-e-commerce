@@ -93,6 +93,8 @@ export function CartProvider({ children }) {
         name: item.product?.name ?? 'Producto Sleep',
         slug: item.product?.slug,
         price: item.unitPrice,
+        media: item.product?.media ?? [],
+        primaryMedia: item.product?.primaryMedia ?? null,
       },
     }));
   }, [cart]);

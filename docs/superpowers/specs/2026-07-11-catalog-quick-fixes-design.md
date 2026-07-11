@@ -78,7 +78,53 @@ El usuario corrió las 4 queries de validación contra el proyecto real de Supab
 
 **Decisión confirmada con el usuario:** los productos sin ninguna imagen real no se muestran en el storefront — se generaliza el filtro de candidatos de la sección B de "excluir por categoría" a "excluir si `product_media` está vacío", sin importar la categoría. Quedan visibles y editables en el admin, y reaparecen solos en el catálogo apenas alguien les carga una imagen real vía el campo nuevo de la sección D.
 
-**Plan de backfill (documentado acá, no ejecutado en esta tarea):**
+**Backfill ejecutado el 2026-07-11 contra producción (`ijxdsuxwbzhvfwedgqzt`):**
+
+Se insertó una variante `Único` para los 9 productos core con imagen real y sin variantes. Cada variante quedó con `stock_quantity = 10`, `inventory_status = 'in_stock'`, `currency_code = 'ARS'`, `compare_at_price_cents = null` y metadata `backfill = '2026-07-11-catalog-quick-fixes'`. El script de ejecución fue `scripts/backfill-core-variants.mjs`; una segunda corrida en dry-run confirmó que los 9 productos ya tenían 1 variante y no quedaban filas pendientes.
+
+Precios insertados:
+
+- `colchon-classic-special-foam`: `$619.999`.
+- `colchon-classic-special-pocket`: `$739.999`.
+- `colchon-classic-rest-bonell`: `$599.999`.
+- `colchon-top-hotel-rest`: `$1.419.999`.
+- `conjunto-classic-special-foam`: `$919.999`.
+- `conjunto-classic-special-pocket`: `$1.039.999`.
+- `conjunto-classic-rest-bonell`: `$899.999`.
+- `conjunto-high-rest-mid`: `$1.309.999`.
+- `conjunto-top-hotel-rest`: `$1.769.999`.
+
+**Backfill adicional ejecutado el 2026-07-11 contra producción (`ijxdsuxwbzhvfwedgqzt`):**
+
+Después de validar visualmente el catálogo, se corrigió la expectativa: el catálogo core son **10 modelos comerciales** y cada uno debe existir como **colchón** y como **conjunto con sommier**, por lo tanto el storefront debe mostrar **20 productos** con imagen real. Producción tenía 12 productos visibles; faltaban 8 filas de producto, no estaban archivadas ni ocultas.
+
+Se creó el script idempotente `scripts/backfill-missing-catalog-products.mjs` y se insertaron los 8 productos faltantes con `status = 'active'`, `is_featured = false`, metadata explícita de `line`, `technology`, `sale_type`, `display_name`, imagen primaria del bucket `colchones` y una variante placeholder `Único` editable desde admin.
+
+Productos insertados:
+
+- `colchon-high-rest-foam`: `HIGH-REST-FIRM.jpg`, `$839.999`.
+- `conjunto-high-rest-foam`: `HIGH-REST-FIRM-S.jpg`, `$1.189.999`.
+- `colchon-superior-rest-mid`: `SUPERIOR-REST-MID.jpg`, `$979.999`.
+- `conjunto-superior-rest-mid`: `SUPERIOR-REST-MID-S.jpg`, `$1.369.999`.
+- `colchon-superior-rest-mid-plush`: `SUPERIOR-REST-MID-PLUSH.jpg`, `$1.029.999`.
+- `conjunto-superior-rest-mid-plush`: `SUPERIOR-REST-MID-PLUSH-S.jpg`, `$1.419.999`.
+- `colchon-superior-rest-ultra-plush`: `SUPERIOR-REST-ULTRA-PLUSH.jpg`, `$1.099.999`.
+- `conjunto-superior-rest-ultra-plush`: `SUPERIOR-REST-ULTRA-PLUSH-S.jpg`, `$1.489.999`.
+
+Una consulta posterior confirmó **20 productos activos visibles** con `product_media` y al menos una variante.
+
+**Limpieza ejecutada el 2026-07-11 contra producción (`ijxdsuxwbzhvfwedgqzt`):**
+
+Se archivaron productos activos que no pertenecían al catálogo Sleep definido o que eran duplicados del combo Europillow. No se borraron filas; quedaron con `status = 'archived'` para sacarlos del storefront sin perder trazabilidad.
+
+- `sleep-air-hybrid`.
+- `sleep-balance-foam`.
+- `combo-colchon-sommier-doble-europillow-hd`.
+- `combo-colchon-sommier-doble-europillow-hd-plus`.
+- `combo-colchon-y-sommier-doble-europillow-espuma-alta-densidad-almohadas-de-regalo`.
+- `combo-colchon-y-sommier-doble-europillow-espuma-de-alta-densidad-almohadas-de-regalo`.
+
+**Plan original de backfill:**
 
 1. Para los **9 core con imagen** (primer grupo de arriba): agregar una variante placeholder por producto para que dejen de mostrar "Sin stock configurado" y sean comprables ya mismo. El precio se deriva del mismo modelo que ya usa el catálogo de fallback (`LINE_PRICE_BASE` + `TECHNOLOGY_PRICE_OFFSET` en `lib/products/admin-service.js`, según línea + tecnología + tipo de venta del producto), no un número al azar — y el stock se carga con una cantidad razonable (ej. 10 unidades). Todo queda editable después desde el admin con los valores reales. Ejemplo de la forma del insert (a repetir por cada uno de los 9, calculando `price_cents` según su línea/tecnología):
 

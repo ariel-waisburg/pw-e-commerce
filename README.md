@@ -55,10 +55,10 @@ contraseña.
 
 ## Cuentas de cliente
 
-- `GET /registro`: alta de cuenta (nombre, email, contraseña) vía Supabase
-  Auth. Crea también la fila correspondiente en `public.customers`.
-- `GET /login`: login con email/contraseña. Acepta `?next=<path>` para volver
-  a donde el usuario venía después de loguearse (usado por el checkout).
+- `GET /registro`: alta de cuenta con nombre, email y código OTP por email vía
+  Supabase Auth. Crea también la fila correspondiente en `public.customers`.
+- `GET /login`: login con código OTP por email. Acepta `?next=<path>` para
+  volver a donde el usuario venía después de loguearse (usado por el checkout).
 - El checkout (`/checkout`) requiere sesión iniciada; si no hay sesión,
   redirige a `/login?next=/checkout`.
 - Al completar una compra, la orden y el carrito quedan asociados al
@@ -67,10 +67,10 @@ contraseña.
   /mis-pedidos/:id` el detalle de uno propio. Redirige a
   `/login?next=/mis-pedidos` sin sesión.
 
-**Nota:** si el proyecto de Supabase tiene "Confirm email" activado
-(Authentication → Settings → Email), un usuario recién registrado no puede
-loguearse hasta confirmar el email. Para que el flujo registro → login sea
-inmediato (recomendado para hacer la demo), desactivar esa opción.
+**Nota:** para que el login sea por código y no por magic link, en Supabase
+Authentication → Email Templates → Magic Link el template debe incluir
+`{{ .Token }}`. El OTP por email mantiene los límites de Supabase Auth: por
+defecto, un reenvío al mismo usuario queda bloqueado durante 60 segundos.
 
 ## API interna
 

@@ -55,6 +55,7 @@ function ProductMedia({
   lineName,
   hasBadges = false,
   badges = null,
+  priority = false,
 }) {
   const [imageFailed, setImageFailed] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -71,6 +72,7 @@ function ProductMedia({
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             className={styles.productImage}
+            priority={priority}
             unoptimized
             onError={() => {
               if (activeImageIndex < imageCandidates.length - 1) {
@@ -97,20 +99,20 @@ function MattressProductCard({
   layout = "grid",
   featured = undefined,
   forceOutOfStock = false,
+  imagePriority = false,
 }) {
   const variantOptions = useMemo(() => {
     if (product.variants?.length) return product.variants;
     return [FALLBACK_VARIANT(product)];
   }, [product]);
 
-  const [selectedVariantId, setSelectedVariantId] = useState(
-    product.defaultVariantId ?? variantOptions[0]?.id
-  );
   const imageCandidates = useMemo(() => buildImageCandidates(product), [product]);
 
   const selectedVariant = useMemo(
-    () => variantOptions.find((variant) => variant.id === selectedVariantId) ?? variantOptions[0],
-    [selectedVariantId, variantOptions]
+    () =>
+      variantOptions.find((variant) => variant.id === product.defaultVariantId) ??
+      variantOptions[0],
+    [product.defaultVariantId, variantOptions]
   );
 
   const card = useMemo(
@@ -129,7 +131,6 @@ function MattressProductCard({
         styles.cardMattress,
         layout === "carousel" ? styles.cardCarousel : "",
         layout === "list" ? styles.cardList : "",
-        card.isFeatured ? styles.cardFeatured : "",
         card.stockState === "out_of_stock" || card.stockState === "unconfigured" ? styles.cardOutOfStock : "",
       ]
         .filter(Boolean)
@@ -142,10 +143,10 @@ function MattressProductCard({
           imageCandidates={imageCandidates}
           imageAlt={imageAlt}
           lineName={card.lineName}
-          hasBadges={card.isFeatured || card.stockState === "out_of_stock" || card.stockState === "unconfigured"}
+          hasBadges={card.stockState === "out_of_stock" || card.stockState === "unconfigured"}
+          priority={imagePriority}
           badges={
             <div className={styles.badges}>
-              {card.isFeatured ? <span className={styles.featuredBadge}>Destacado</span> : null}
               {card.stockState === "out_of_stock" ? (
                 <span className={styles.stockBadge}>Sin stock</span>
               ) : null}
@@ -155,39 +156,12 @@ function MattressProductCard({
             </div>
           }
         />
-
-        {variantOptions.length > 1 ? (
-          <div className={styles.measureStrip}>
-            <p className={styles.measureStripLabel}>Medida</p>
-            <div className={styles.sizes} aria-label="Medidas disponibles">
-              {variantOptions.slice(0, 4).map((variant) => (
-                <button
-                  key={variant.id}
-                  type="button"
-                  className={`${styles.sizeBtn} ${
-                    selectedVariant?.id === variant.id ? styles.sizeSelected : ""
-                  }`}
-                  aria-pressed={selectedVariant?.id === variant.id}
-                  onClick={() => setSelectedVariantId(variant.id)}
-                >
-                  {variant.label ?? variant.title}
-                </button>
-              ))}
-              {variantOptions.length > 4 ? (
-                <Link href={productHref} className={styles.moreSizes}>
-                  Ver más
-                </Link>
-              ) : null}
-            </div>
-          </div>
-        ) : null}
       </div>
 
       <div className={styles.contentColumn}>
         <div className={styles.contentMain}>
           <div className={styles.header}>
             <p className={styles.lineEyebrow}>{card.lineName}</p>
-            {card.saleTypeLabel ? <span className={styles.saleTypePill}>{card.saleTypeLabel}</span> : null}
           </div>
 
           <div className={styles.nameBlock}>
@@ -216,16 +190,9 @@ function MattressProductCard({
             <div className={styles.financeBlock}>
               {card.compareAtPrice ? (
                 <p className={styles.originalPrice}>Antes {formatPrice(card.compareAtPrice)}</p>
-              ) : (
-                <p className={styles.regularPrice}>Precio vigente</p>
-              )}
+              ) : null}
               {card.installmentsLabel ? <p className={styles.installments}>{card.installmentsLabel}</p> : null}
             </div>
-          </div>
-
-          <div className={styles.supportRow}>
-            {card.measureSummary ? <p className={styles.supportMeta}>{card.measureSummary} disponibles</p> : null}
-            {card.setSplitLabel ? <p className={styles.supportMeta}>Sommier: {card.setSplitLabel}</p> : null}
           </div>
 
           <div className={styles.actions}>
@@ -239,7 +206,7 @@ function MattressProductCard({
             >
               {card.stockState === "out_of_stock" || card.stockState === "unconfigured"
                 ? "Ver producto"
-                : "Elegir medida"}
+                : "Ver modelo"}
             </Link>
           </div>
         </div>

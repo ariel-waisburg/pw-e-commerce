@@ -4,6 +4,7 @@ import ProductCard from "@/components/ProductCard";
 import fallbackProducts from "@/data/products";
 import { buildHomepageContent } from "@/lib/products/homepage.mjs";
 import { mapSupabaseProductToCardData, mapFallbackProducts } from "@/lib/products/mappers";
+import { isStorefrontProductVisible } from "@/lib/products/storefront-visibility.mjs";
 import { getCatalogProducts } from "@/lib/supabase/queries/products";
 import styles from "./page.module.css";
 
@@ -23,7 +24,7 @@ export default async function Home() {
 
   const fallbackCatalog = mapFallbackProducts(fallbackProducts);
   const catalogProducts = catalogRaw?.length
-    ? catalogRaw.map(mapSupabaseProductToCardData).filter(Boolean)
+    ? catalogRaw.filter(isStorefrontProductVisible).map(mapSupabaseProductToCardData).filter(Boolean)
     : fallbackCatalog;
 
   const homepage = buildHomepageContent(catalogProducts);

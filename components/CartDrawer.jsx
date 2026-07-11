@@ -1,5 +1,6 @@
 'use client';
 
+import Image from "next/image";
 import Link from "next/link";
 import { useCart } from '@/context/CartContext';
 import styles from './CartDrawer.module.css';
@@ -38,7 +39,18 @@ export default function CartDrawer() {
               {items.map(item => (
                 <div key={item.id} className={styles.item}>
                   <div className={styles.itemImageWrap}>
-                    <div className={styles.itemImagePlaceholder}>🛏</div>
+                    {item.product.primaryMedia?.url ? (
+                      <Image
+                        src={item.product.primaryMedia.url}
+                        alt={item.product.primaryMedia.alt ?? item.product.name}
+                        width={58}
+                        height={58}
+                        unoptimized
+                        className={styles.itemImage}
+                      />
+                    ) : (
+                      <div className={styles.itemImagePlaceholder} aria-hidden="true" />
+                    )}
                   </div>
                   <div className={styles.itemInfo}>
                     <p className={styles.itemName}>{item.product.name}</p>

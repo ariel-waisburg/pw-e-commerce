@@ -1,15 +1,17 @@
 "use server";
 
 import { getSupabaseServiceRole } from "@/lib/supabase/server";
+import { requireCustomerSession } from "@/lib/supabase/customer-auth";
 
-export async function createCustomerProfileAction({ userId, fullName }) {
-  if (!userId) {
-    throw new Error("userId is required");
+export async function createCustomerProfileAction({ fullName }) {
+  const { session, error: sessionError } = await requireCustomerSession();
+  if (sessionError) {
+    throw sessionError;
   }
 
   const { error } = await getSupabaseServiceRole()
     .from("customers")
-    .upsert({ id: userId, full_name: fullName || null }, { onConflict: "id" });
+    .upsert({ id: session.user.id, full_name: fullName || null }, { onConflict: "id" });
 
   if (error) {
     throw new Error(error.message);

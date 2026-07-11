@@ -16,7 +16,7 @@ import styles from "./Navbar.module.css";
 const QUICK_LINKS = [
   {
     label: "Catálogo completo",
-    description: "Todas las líneas, medidas y accesorios en un solo lugar.",
+    description: "Todas las líneas y medidas en un solo lugar.",
     href: "/catalog",
   },
   {
@@ -28,11 +28,6 @@ const QUICK_LINKS = [
     label: "Conjuntos",
     description: "Colchón con sommier, ya listo para resolver la compra.",
     href: `/catalog?saleType=${SALE_TYPE_DEFINITIONS[1].value}`,
-  },
-  {
-    label: "Almohadas",
-    description: "Tecnología y tamaño como navegación independiente.",
-    href: "/catalog?category=almohadas",
   },
 ];
 
@@ -188,14 +183,6 @@ export default function Navbar() {
                 </div>
               </div>
             </div>
-
-            <Link
-              href="/catalog?category=almohadas"
-              className={styles.navLink}
-              onClick={closeAll}
-            >
-              Almohadas
-            </Link>
 
             <a
               href="https://wa.me/541139205184"

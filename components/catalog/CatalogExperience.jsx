@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { useEffect, useId, useMemo, useState, useTransition } from "react";
+import { useId, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import MeasurementGuideModal from "@/components/catalog/MeasurementGuideModal";
@@ -23,24 +23,11 @@ import {
 import styles from "./CatalogExperience.module.css";
 
 const QUESTION_HELP = {
-  measure:
-    "La medida ordena qué variantes y precios vas a comparar. Definirla al principio evita mezclar opciones que no son equivalentes.",
-  firmness:
-    "Habla de la sensación al acostarte. Importa porque cambia cuánto soporte y contención percibís cada noche.",
-  sleepPosition:
-    "La postura cambia dónde apoyás más peso. Nos ayuda a priorizar alivio de presión o soporte según tu descanso.",
-  sleepMode:
-    "Dormir con otra persona cambia espacio, movimiento y estabilidad. Eso puede hacerte priorizar otro tipo de base o sensación.",
-  budget:
-    "Usalo como un rango real de compra. Sirve para comparar medidas y líneas que hoy sí entran en tu decisión.",
-};
-
-const QUESTION_IMPACT = {
-  measure: "Filtra la medida exacta y deja precios comparables entre sí.",
-  firmness: "Filtra productos por sensación general para bajar el ruido del catálogo.",
-  sleepPosition: "No elimina todo: reordena primero los modelos que mejor acompañan esa postura.",
-  sleepMode: "Filtra variantes por ancho útil y prioriza estabilidad si dormís acompañado.",
-  budget: "Filtra variantes por precio real y deja un rango compartible en la URL.",
+  measure: "Elegir medida deja precios comparables.",
+  firmness: "Usamos tu preferencia para ordenar modelos.",
+  sleepPosition: "Ayuda a priorizar la sensación de descanso.",
+  sleepMode: "Dormir acompañado puede cambiar la medida ideal.",
+  budget: "Filtra opciones dentro de tu rango.",
 };
 
 function formatBudgetDraft(value) {
@@ -162,17 +149,33 @@ function ChoiceGroup({
   );
 }
 
+function SelectFilter({ label, description, options, value, onChange, allLabel = "Todas" }) {
+  const selectId = useId();
+
+  return (
+    <label className={styles.selectFilter} htmlFor={selectId}>
+      <span className={styles.selectFilterLabel}>{label}</span>
+      {description ? <span className={styles.selectFilterDescription}>{description}</span> : null}
+      <select
+        id={selectId}
+        className={styles.selectFilterInput}
+        value={value ?? ""}
+        onChange={(event) => onChange(event.target.value || null)}
+      >
+        <option value="">{allLabel}</option>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 function BudgetRangeField({ minValue, maxValue, bounds, onChange, onClear }) {
-  const [draftMin, setDraftMin] = useState(formatBudgetDraft(minValue));
-  const [draftMax, setDraftMax] = useState(formatBudgetDraft(maxValue));
-
-  useEffect(() => {
-    setDraftMin(formatBudgetDraft(minValue));
-  }, [minValue]);
-
-  useEffect(() => {
-    setDraftMax(formatBudgetDraft(maxValue));
-  }, [maxValue]);
+  const minInputRef = useRef(null);
+  const maxInputRef = useRef(null);
 
   const safeBounds = bounds?.max > bounds?.min ? bounds : { min: 0, max: 2000000 };
   const sliderMin = minValue ?? safeBounds.min;
@@ -193,13 +196,18 @@ function BudgetRangeField({ minValue, maxValue, bounds, onChange, onClear }) {
 
     onChange({ min: parsedMin, max: parsedMax });
   };
+  const commitDraftInputs = () => {
+    commitRange(
+      parseBudgetDraft(minInputRef.current?.value),
+      parseBudgetDraft(maxInputRef.current?.value)
+    );
+  };
 
   return (
     <div className={styles.questionField}>
       <QuestionHeader
         title="5. ¿Qué rango de presupuesto querés mirar?"
         helpText={QUESTION_HELP.budget}
-        impactText={QUESTION_IMPACT.budget}
       />
 
       <div className={styles.budgetRangeCard}>
@@ -219,12 +227,16 @@ function BudgetRangeField({ minValue, maxValue, bounds, onChange, onClear }) {
           <label className={styles.budgetInputGroup}>
             <span>Mínimo</span>
             <input
+              key={`budget-min-${minValue ?? "empty"}`}
+              ref={minInputRef}
               type="text"
               inputMode="numeric"
               placeholder={String(safeBounds.min)}
-              value={draftMin}
-              onChange={(event) => setDraftMin(event.target.value.replace(/[^\d]/g, ""))}
-              onBlur={() => commitRange(parseBudgetDraft(draftMin), parseBudgetDraft(draftMax))}
+              defaultValue={formatBudgetDraft(minValue)}
+              onChange={(event) => {
+                event.target.value = event.target.value.replace(/[^\d]/g, "");
+              }}
+              onBlur={commitDraftInputs}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
                   event.currentTarget.blur();
@@ -236,12 +248,16 @@ function BudgetRangeField({ minValue, maxValue, bounds, onChange, onClear }) {
           <label className={styles.budgetInputGroup}>
             <span>Máximo</span>
             <input
+              key={`budget-max-${maxValue ?? "empty"}`}
+              ref={maxInputRef}
               type="text"
               inputMode="numeric"
               placeholder={String(safeBounds.max)}
-              value={draftMax}
-              onChange={(event) => setDraftMax(event.target.value.replace(/[^\d]/g, ""))}
-              onBlur={() => commitRange(parseBudgetDraft(draftMin), parseBudgetDraft(draftMax))}
+              defaultValue={formatBudgetDraft(maxValue)}
+              onChange={(event) => {
+                event.target.value = event.target.value.replace(/[^\d]/g, "");
+              }}
+              onBlur={commitDraftInputs}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
                   event.currentTarget.blur();
@@ -302,10 +318,7 @@ function RecommendationPanel({ recommendation, hrefBuilder }) {
       <div className={styles.recommendationSidebarInner}>
         <div className={styles.recommendationHeader}>
           <div>
-            <h2 className={styles.recommendationTitle}>Un punto de partida según cómo dormís</h2>
-            <p className={styles.recommendationIntro}>
-              Tus respuestas ordenan el catálogo y afinan esta sugerencia para arrancar con menos ruido.
-            </p>
+            <h2 className={styles.recommendationTitle}>Sugerencia</h2>
           </div>
         </div>
 
@@ -330,11 +343,8 @@ function RecommendationPanel({ recommendation, hrefBuilder }) {
         ) : (
           <div className={styles.recommendationEmpty}>
             <p className={styles.recommendationMeta}>Recomendación guiada</p>
-            <h3>Respondé al menos una pregunta</h3>
-            <p>
-              Apenas marques medida, sensación, postura, compañía o presupuesto te mostramos un modelo
-              concreto con precio, imagen y acceso directo al detalle.
-            </p>
+            <h3>Respondé una pregunta</h3>
+            <p>Te mostramos un modelo para empezar.</p>
           </div>
         )}
       </div>
@@ -421,7 +431,7 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
     });
   };
 
-  const hasActiveSearch = Boolean(model.state.q);
+  const activeDecisionChips = [...model.activeSelectorChips, ...model.activeFilterChips];
 
   const resultsSection = (
     <section className={styles.resultsSection} aria-busy={isPending}>
@@ -437,13 +447,18 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
 
       {model.visibleProducts.length ? (
         <div className={styles.grid}>
-          {model.visibleProducts.map((product) => (
-            <ProductCard key={product.id} product={product} href={hrefBuilder(product.slug)} />
+          {model.visibleProducts.map((product, index) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              href={hrefBuilder(product.slug)}
+              imagePriority={index < 4}
+            />
           ))}
         </div>
       ) : (
         <div className={styles.emptyState}>
-          <span className={styles.emptyIcon}>🛏️</span>
+          <span className={styles.emptyIcon} aria-hidden="true">Sleep</span>
           <h3>No encontramos productos para esta combinación</h3>
           <p>
             Ajustá una respuesta o remové un filtro. El estado actual sigue guardado en la URL para
@@ -488,114 +503,120 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
 
   const filtersSection = (
     <section className={styles.filtersSection}>
-      <div className={styles.filtersHeader}>
-        <div>
-          <h2 className={styles.sectionTitle}>Compará por decisiones reales de compra</h2>
+      <div className={styles.decisionPanelHeader}>
+        <div className={styles.decisionPanelCopy}>
+          <p className={styles.decisionEyebrow}>Catálogo</p>
+          <h2 className={styles.sectionTitle}>Elegí y compará</h2>
         </div>
-        <button
-          type="button"
-          className={styles.clearBtn}
-          onClick={() => replaceState(clearCatalogState(model.state))}
-        >
-          Limpiar todo
-        </button>
+        <div className={styles.decisionPanelActions}>
+          <div className={styles.resultPill} aria-live="polite">
+            <strong>{model.resultCount}</strong>
+            <span>resultado{model.resultCount === 1 ? "" : "s"}</span>
+          </div>
+          <button
+            type="button"
+            className={styles.clearBtn}
+            onClick={() => replaceState(clearCatalogState(model.state))}
+          >
+            Limpiar todo
+          </button>
+        </div>
       </div>
 
-      <div className={styles.activeChipsWrap}>
-        {model.activeSelectorChips.length ? (
-          <div className={styles.activeChipRow}>
-            <span className={styles.activeChipLabel}>Tus respuestas</span>
-            {model.activeSelectorChips.map((chip) => (
-              <button
-                key={`${chip.kind}-${chip.key}`}
-                type="button"
-                className={styles.activeChip}
-                onClick={() => replaceState(removeCatalogStateKey(model.state, chip.key))}
-              >
-                {chip.label} <span aria-hidden="true">×</span>
-              </button>
-            ))}
-          </div>
-        ) : null}
-
-        {model.activeFilterChips.length ? (
-          <div className={styles.activeChipRow}>
-            <span className={styles.activeChipLabel}>Filtros activos</span>
-            {model.activeFilterChips.map((chip) => (
-              <button
-                key={`${chip.kind}-${chip.key}`}
-                type="button"
-                className={styles.activeChip}
-                onClick={() => replaceState(removeCatalogStateKey(model.state, chip.key))}
-              >
-                {chip.label} <span aria-hidden="true">×</span>
-              </button>
-            ))}
-          </div>
-        ) : null}
+      <div className={styles.decisionSummary}>
+        {activeDecisionChips.length ? (
+          <>
+            <span className={styles.activeChipLabel}>Selección actual</span>
+            <div className={styles.activeChipRow}>
+              {activeDecisionChips.map((chip) => (
+                <button
+                  key={`${chip.kind}-${chip.key}`}
+                  type="button"
+                  className={`${styles.activeChip} ${
+                    chip.kind === "selector" ? styles.activeChipGuided : ""
+                  }`}
+                  onClick={() => replaceState(removeCatalogStateKey(model.state, chip.key))}
+                >
+                  {chip.label} <span aria-hidden="true">×</span>
+                </button>
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className={styles.decisionSummaryEmpty}>
+            Empezá por medida o presentación.
+          </p>
+        )}
       </div>
 
       {!model.isAccessoryMode ? (
-        <div className={styles.filterGrid}>
-          <ChoiceGroup
-            title="Medida"
-            options={model.filterOptions.measures}
-            value={model.state.measure}
-            onChange={(value) => handleFieldChange("measure", value)}
-            className={styles.filterCard}
-          />
+        <>
+          <div className={styles.decisionControls}>
+            <SelectFilter
+              label="Medida"
+              options={model.filterOptions.measures}
+              value={model.state.measure}
+              onChange={(value) => handleFieldChange("measure", value)}
+              allLabel="Todas las medidas"
+            />
 
-          <ChoiceGroup
-            title="Tipo"
-            options={model.filterOptions.saleTypes.map((option) => ({
-              value: option.value,
-              label: option.value === "mattress" ? "Solo colchón" : "Colchón + base",
-            }))}
-            value={model.state.saleType}
-            onChange={(value) => handleFieldChange("saleType", value)}
-            className={styles.filterCard}
-          />
+            <SelectFilter
+              label="Presentación"
+              options={model.filterOptions.saleTypes.map((option) => ({
+                value: option.value,
+                label: option.value === "mattress" ? "Solo colchón" : "Colchón + sommier",
+              }))}
+              value={model.state.saleType}
+              onChange={(value) => handleFieldChange("saleType", value)}
+              allLabel="Todas"
+            />
 
-          <ChoiceGroup
-            title="Tecnología"
-            options={model.filterOptions.technologies.map((option) => ({
-              value: option.value,
-              label:
-                option.value === "bonell"
-                  ? "Resortes tradicionales"
-                  : option.value === "pocket"
-                    ? "Resortes pocket"
-                    : option.label,
-            }))}
-            value={model.state.technology}
-            onChange={(value) => handleFieldChange("technology", value)}
-            className={styles.filterCard}
-          />
+            <SelectFilter
+              label="Tecnología"
+              options={model.filterOptions.technologies.map((option) => ({
+                value: option.value,
+                label:
+                  option.value === "bonell"
+                    ? "Resortes tradicionales"
+                    : option.value === "pocket"
+                      ? "Resortes pocket"
+                      : option.label,
+              }))}
+              value={model.state.technology}
+              onChange={(value) => handleFieldChange("technology", value)}
+              allLabel="Todas"
+            />
+          </div>
 
-          <ChoiceGroup
-            title="Aislación de movimiento"
-            options={model.filterOptions.motionIsolationLevels}
-            value={model.state.motionIsolation}
-            onChange={(value) => handleFieldChange("motionIsolation", value)}
-            className={styles.filterCard}
-          />
+          <details className={styles.advancedFilters}>
+            <summary>Más criterios de comparación</summary>
+            <div className={styles.advancedFilterGrid}>
+              <ChoiceGroup
+                title="Aislación de movimiento"
+                options={model.filterOptions.motionIsolationLevels}
+                value={model.state.motionIsolation}
+                onChange={(value) => handleFieldChange("motionIsolation", value)}
+                className={styles.advancedFilterGroup}
+              />
 
-          <ChoiceGroup
-            title="Altura"
-            options={model.filterOptions.heightProfiles}
-            value={model.state.heightProfile}
-            onChange={(value) => handleFieldChange("heightProfile", value)}
-            className={styles.filterCard}
-          />
+              <ChoiceGroup
+                title="Altura"
+                options={model.filterOptions.heightProfiles}
+                value={model.state.heightProfile}
+                onChange={(value) => handleFieldChange("heightProfile", value)}
+                className={styles.advancedFilterGroup}
+              />
 
-          <ChoiceGroup
-            title="Disponibilidad"
-            options={model.filterOptions.availability}
-            value={model.state.availability}
-            onChange={(value) => handleFieldChange("availability", value)}
-            className={styles.filterCard}
-          />
-        </div>
+              <ChoiceGroup
+                title="Disponibilidad"
+                options={model.filterOptions.availability}
+                value={model.state.availability}
+                onChange={(value) => handleFieldChange("availability", value)}
+                className={styles.advancedFilterGroup}
+              />
+            </div>
+          </details>
+        </>
       ) : null}
     </section>
   );
@@ -619,7 +640,7 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
 
       <section className={styles.hero}>
         <div>
-          <h1 className={styles.heroTitle}>Encontrá el colchón indicado según cómo dormís</h1>
+          <h1 className={styles.heroTitle}>Colchones y sommiers para elegir simple</h1>
         </div>
 
         <form className={styles.searchBar} onSubmit={handleSearchSubmit}>
@@ -628,16 +649,18 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
             name="q"
             key={model.state.q ?? ""}
             defaultValue={model.state.q ?? ""}
-            placeholder="Ej.: Colchón firme 2 plazas, Queen con resortes, Almohada memory foam"
+            placeholder="Buscá por medida, línea o tecnología"
             aria-label="Buscar en lenguaje natural"
           />
           <button type="button" onClick={handleSearchButtonClick}>
             Buscar
           </button>
         </form>
-        <p className={styles.searchHint}>
-          Entiende medidas, nombres comunes, tecnologías y términos como “hotelero” o “para pareja”.
-        </p>
+        <div className={styles.heroPills} aria-label="Qué podés comparar">
+          <span>Medida</span>
+          <span>Presentación</span>
+          <span>Tecnología</span>
+        </div>
       </section>
 
       <div className={styles.categoryRow}>
@@ -649,22 +672,6 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
         >
           Colchones y conjuntos
         </button>
-        <button
-          type="button"
-          className={`${styles.categoryBtn} ${model.state.category === "almohadas" ? styles.categoryBtnActive : ""}`}
-          aria-pressed={model.state.category === "almohadas"}
-          onClick={() => handleCategoryChange("almohadas")}
-        >
-          Almohadas
-        </button>
-        <button
-          type="button"
-          className={`${styles.categoryBtn} ${model.state.category === "pillow" ? styles.categoryBtnActive : ""}`}
-          aria-pressed={model.state.category === "pillow"}
-          onClick={() => handleCategoryChange("pillow")}
-        >
-          Pillow Top
-        </button>
       </div>
 
       {usedFallback ? (
@@ -674,13 +681,14 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
         </div>
       ) : null}
 
-      {hasActiveSearch ? catalogLayout : null}
+      {catalogLayout}
 
       {!model.isAccessoryMode ? (
         <section className={styles.selectorSection}>
           <div className={styles.selectorHeader}>
             <div>
-              <h2 className={styles.sectionTitle}>Cinco preguntas para orientarte rápido</h2>
+              <p className={styles.decisionEyebrow}>Guía rápida</p>
+              <h2 className={styles.sectionTitle}>No sé cuál elegir</h2>
             </div>
           </div>
 
@@ -690,7 +698,6 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
                 <QuestionHeader
                   title="1. ¿Qué tamaño necesitás?"
                   helpText={QUESTION_HELP.measure}
-                  impactText={QUESTION_IMPACT.measure}
                   helpActionLabel="Ver guía de medidas"
                   onHelpAction={() => setIsMeasureGuideOpen(true)}
                 />
@@ -712,7 +719,6 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
               <ChoiceGroup
                 title="2. ¿Preferís suave, equilibrado o firme?"
                 helpText={QUESTION_HELP.firmness}
-                impactText={QUESTION_IMPACT.firmness}
                 options={FIRMNESS_OPTIONS}
                 value={model.state.firmness}
                 onChange={(value) => handleFieldChange("firmness", value)}
@@ -723,7 +729,6 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
               <ChoiceGroup
                 title="3. ¿En qué posición dormís normalmente?"
                 helpText={QUESTION_HELP.sleepPosition}
-                impactText={QUESTION_IMPACT.sleepPosition}
                 options={SLEEP_POSITION_OPTIONS}
                 value={model.state.sleepPosition}
                 onChange={(value) => handleFieldChange("sleepPosition", value)}
@@ -734,7 +739,6 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
               <ChoiceGroup
                 title="4. ¿Dormís solo/a o con otra persona?"
                 helpText={QUESTION_HELP.sleepMode}
-                impactText={QUESTION_IMPACT.sleepMode}
                 options={SLEEP_MODE_OPTIONS}
                 value={model.state.sleepMode}
                 onChange={(value) => handleFieldChange("sleepMode", value)}
@@ -756,13 +760,9 @@ export default function CatalogExperience({ products, initialSearchParams = {}, 
         </section>
       ) : (
         <div className={styles.accessoryNotice}>
-          <strong>Modo accesorios.</strong> El selector guiado está pensado para colchones. Podés
-          usar búsqueda y categoría para explorar almohadas o pillow tops sin mezclar decisiones de
-          compra de colchón.
+          <strong>Accesorios.</strong> Usá búsqueda y categoría para explorar sin mezclar decisiones.
         </div>
       )}
-
-      {!hasActiveSearch ? catalogLayout : null}
     </main>
   );
 }

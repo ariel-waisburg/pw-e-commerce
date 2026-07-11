@@ -15,6 +15,10 @@ function emptyVariant() {
   return { sku: "", title: "", priceCents: "", compareAtPriceCents: "", stockQuantity: "" };
 }
 
+function emptyMedia() {
+  return { url: "", alt: "" };
+}
+
 function toFormState(product) {
   if (!product) {
     return {
@@ -26,9 +30,12 @@ function toFormState(product) {
       longDescription: "",
       status: "draft",
       isFeatured: false,
+      media: [emptyMedia()],
       variants: [emptyVariant()],
     };
   }
+
+  const sortedMedia = [...(product.media ?? [])].sort((left, right) => (left.sort_index ?? 0) - (right.sort_index ?? 0));
 
   return {
     name: product.name ?? "",
@@ -39,14 +46,23 @@ function toFormState(product) {
     longDescription: product.long_description ?? "",
     status: product.status ?? "draft",
     isFeatured: Boolean(product.is_featured),
-    variants: (product.variants ?? []).map((variant) => ({
-      id: variant.id,
-      sku: variant.sku ?? "",
-      title: variant.title ?? "",
-      priceCents: String(variant.price_cents ?? ""),
-      compareAtPriceCents: variant.compare_at_price_cents != null ? String(variant.compare_at_price_cents) : "",
-      stockQuantity: String(variant.stock_quantity ?? ""),
-    })),
+    media: sortedMedia.length
+      ? sortedMedia.map((asset) => ({
+          id: asset.id,
+          url: asset.url ?? "",
+          alt: asset.alt ?? "",
+        }))
+      : [emptyMedia()],
+    variants: (product.variants ?? []).length
+      ? product.variants.map((variant) => ({
+          id: variant.id,
+          sku: variant.sku ?? "",
+          title: variant.title ?? "",
+          priceCents: String(variant.price_cents ?? ""),
+          compareAtPriceCents: variant.compare_at_price_cents != null ? String(variant.compare_at_price_cents) : "",
+          stockQuantity: String(variant.stock_quantity ?? ""),
+        }))
+      : [emptyVariant()],
   };
 }
 
@@ -60,6 +76,11 @@ function buildPayload(formState) {
     longDescription: formState.longDescription,
     status: formState.status,
     isFeatured: formState.isFeatured,
+    media: formState.media.map((asset) => ({
+      ...(asset.id ? { id: asset.id } : {}),
+      url: asset.url,
+      ...(asset.alt ? { alt: asset.alt } : {}),
+    })),
     variants: formState.variants.map((variant) => ({
       ...(variant.id ? { id: variant.id } : {}),
       sku: variant.sku,
@@ -91,14 +112,34 @@ export default function AdminProductForm({ product = null, productId = null }) {
     }));
   }
 
+  function updateMedia(index, name, value) {
+    setFormState((current) => ({
+      ...current,
+      media: current.media.map((asset, assetIndex) =>
+        assetIndex === index ? { ...asset, [name]: value } : asset
+      ),
+    }));
+  }
+
   function addVariant() {
     setFormState((current) => ({ ...current, variants: [...current.variants, emptyVariant()] }));
+  }
+
+  function addMedia() {
+    setFormState((current) => ({ ...current, media: [...current.media, emptyMedia()] }));
   }
 
   function removeVariant(index) {
     setFormState((current) => ({
       ...current,
       variants: current.variants.filter((_, variantIndex) => variantIndex !== index),
+    }));
+  }
+
+  function removeMedia(index) {
+    setFormState((current) => ({
+      ...current,
+      media: current.media.filter((_, assetIndex) => assetIndex !== index),
     }));
   }
 
@@ -222,8 +263,45 @@ export default function AdminProductForm({ product = null, productId = null }) {
         <span>Destacado</span>
       </label>
 
+      <fieldset className={styles.media}>
+        <legend>Imágenes</legend>
+        <p className={styles.helpText}>
+          Pegá la URL de una imagen real ya alojada. La primera imagen se usa como principal en catálogo, ficha y carrito.
+        </p>
+        {fieldError?.field?.startsWith("media") ? (
+          <em className={styles.fieldError}>{fieldError.message}</em>
+        ) : null}
+
+        {formState.media.map((asset, index) => (
+          <div className={styles.mediaRow} key={index}>
+            <input
+              type="url"
+              placeholder="URL de imagen"
+              value={asset.url}
+              onChange={(event) => updateMedia(index, "url", event.target.value)}
+              required
+            />
+            <input
+              placeholder="Texto alternativo (opcional)"
+              value={asset.alt}
+              onChange={(event) => updateMedia(index, "alt", event.target.value)}
+            />
+            <button type="button" onClick={() => removeMedia(index)} disabled={formState.media.length === 1}>
+              Quitar
+            </button>
+          </div>
+        ))}
+
+        <button type="button" className={styles.addVariant} onClick={addMedia}>
+          Agregar imagen
+        </button>
+      </fieldset>
+
       <fieldset className={styles.variants}>
         <legend>Variantes</legend>
+        <p className={styles.helpText}>
+          Podés cargar precio y stock estimados ahora y editarlos más adelante cuando tengas los valores reales.
+        </p>
         {fieldError?.field?.startsWith("variants") ? (
           <em className={styles.fieldError}>{fieldError.message}</em>
         ) : null}
