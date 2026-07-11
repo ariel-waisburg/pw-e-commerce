@@ -63,6 +63,9 @@ contraseña.
   redirige a `/login?next=/checkout`.
 - Al completar una compra, la orden y el carrito quedan asociados al
   `customer_id` del usuario logueado.
+- `GET /mis-pedidos`: lista los pedidos del cliente logueado; `GET
+  /mis-pedidos/:id` el detalle de uno propio. Redirige a
+  `/login?next=/mis-pedidos` sin sesión.
 
 **Nota:** si el proyecto de Supabase tiene "Confirm email" activado
 (Authentication → Settings → Email), un usuario recién registrado no puede
@@ -75,6 +78,19 @@ inmediato (recomendado para hacer la demo), desactivar esa opción.
   a través de la misma función de servicio, sin round-trip HTTP interno).
 - `GET/POST /api/admin/products` y `GET/PATCH/DELETE /api/admin/products/:id`:
   CRUD de productos, requiere sesión de admin (`401` sin ella).
+
+## API de carrito y órdenes
+
+- `GET /api/cart`: carrito actual según la cookie de invitado. Devuelve
+  `{ cart: null }` si todavía no hay cookie (no crea un carrito vacío).
+- `DELETE /api/cart`: vacía el carrito actual.
+- `POST /api/cart/items`: agrega un item `{ variantId, quantity? }`.
+- `PATCH /api/cart/items/:itemId`: cambia la cantidad `{ quantity }`.
+- `DELETE /api/cart/items/:itemId`: quita un item.
+- `GET /api/orders`: pedidos del cliente logueado. Requiere sesión (`401`
+  sin ella).
+- `GET /api/orders/:id`: detalle de un pedido propio (`403` si es de otro
+  cliente, `404` si no existe).
 
 ## Configuración de Mercado Pago
 
