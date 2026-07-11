@@ -24,6 +24,7 @@
   --color-border: #d7e6e3;
   --color-border-light: #e8f1ef;
   --color-success: #22a06b;
+  --color-error: #b3261e;
   --color-overlay: rgba(18, 58, 63, 0.5);
   --background: var(--color-surface);
   --foreground: var(--color-text-primary);

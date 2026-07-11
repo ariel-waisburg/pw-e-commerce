@@ -9,6 +9,7 @@ import {
   SALE_TYPE_DEFINITIONS,
   TECHNOLOGY_DEFINITIONS,
 } from "@/lib/products/catalog-config.mjs";
+import AccountMenu from "./AccountMenu";
 import CartDrawer from "./CartDrawer";
 import styles from "./Navbar.module.css";
 
@@ -208,6 +209,7 @@ export default function Navbar() {
           </nav>
 
           <div className={styles.actions}>
+            <AccountMenu />
             <a
               href="https://wa.me/541139205184"
               className={styles.supportLink}

@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import CheckoutForm from "@/components/CheckoutForm";
 import { CART_COOKIE_NAME } from "@/lib/cart/constants";
 import { serializeCartRecord } from "@/lib/cart/serializer";
 import { getCartByToken } from "@/lib/cart/server";
+import { getCustomerSession } from "@/lib/supabase/customer-auth";
 import styles from "./checkout.module.css";
 
 export const metadata = {
@@ -12,6 +14,11 @@ export const metadata = {
 };
 
 export default async function CheckoutPage() {
+  const session = await getCustomerSession();
+  if (!session) {
+    redirect("/login?next=/checkout");
+  }
+
   const cookieStore = await cookies();
   const token = cookieStore.get(CART_COOKIE_NAME)?.value;
   const cart = serializeCartRecord(await getCartByToken(token));

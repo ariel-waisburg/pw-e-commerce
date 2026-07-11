@@ -53,6 +53,22 @@ npm run dev
 Una vez hecho esto, ese usuario puede entrar en `/admin/login` con su email y
 contraseña.
 
+## Cuentas de cliente
+
+- `GET /registro`: alta de cuenta (nombre, email, contraseña) vía Supabase
+  Auth. Crea también la fila correspondiente en `public.customers`.
+- `GET /login`: login con email/contraseña. Acepta `?next=<path>` para volver
+  a donde el usuario venía después de loguearse (usado por el checkout).
+- El checkout (`/checkout`) requiere sesión iniciada; si no hay sesión,
+  redirige a `/login?next=/checkout`.
+- Al completar una compra, la orden y el carrito quedan asociados al
+  `customer_id` del usuario logueado.
+
+**Nota:** si el proyecto de Supabase tiene "Confirm email" activado
+(Authentication → Settings → Email), un usuario recién registrado no puede
+loguearse hasta confirmar el email. Para que el flujo registro → login sea
+inmediato (recomendado para hacer la demo), desactivar esa opción.
+
 ## API interna
 
 - `GET /api/products`: catálogo público activo (usado por home y `/catalog`
