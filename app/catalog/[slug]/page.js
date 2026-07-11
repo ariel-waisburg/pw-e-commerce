@@ -152,6 +152,7 @@ export default async function ProductDetailPage({ params, searchParams }) {
   const pdpContext = getPdpContextSummary(catalogState);
   const catalogHref = buildCatalogStateHref(catalogState);
   const categoryLabel = product.categoryLabel ?? product.category;
+  const hasConfiguredVariants = Boolean(product.variants?.length);
   const heroSpecs = [
     product.saleTypeLabel,
     product.technologyLabel,
@@ -181,6 +182,13 @@ export default async function ProductDetailPage({ params, searchParams }) {
                 <strong>Información offline.</strong> Este detalle se está mostrando con datos locales
                 porque no pudimos conectarnos a la base. Intentá nuevamente más tarde para ver la info
                 más reciente.
+              </div>
+            )}
+
+            {!usedFallback && !hasConfiguredVariants && (
+              <div className={styles.alert}>
+                <strong>Sin stock configurado.</strong> Todavía no cargamos medidas y precios para este
+                producto. Escribinos por WhatsApp para consultar disponibilidad.
               </div>
             )}
 
@@ -265,6 +273,17 @@ export default async function ProductDetailPage({ params, searchParams }) {
             defaultVariantId={product.defaultVariantId}
             preferredMeasureCode={catalogState.measure}
           />
+
+          {!hasConfiguredVariants && (
+            <a
+              href="https://wa.me/541139205184"
+              target="_blank"
+              rel="noreferrer"
+              className={styles.contextLink}
+            >
+              Consultar disponibilidad por WhatsApp
+            </a>
+          )}
         </section>
       </section>
 
